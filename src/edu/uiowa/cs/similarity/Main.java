@@ -87,7 +87,6 @@ public class Main {
         sentence = sentence.replace(":", "");
         sentence = sentence.replace(";", "");
         sentence = sentence.replace("\"", "");
-        // sentence = sentence.replace("\'", "");
         sentence = sentence.toLowerCase();
         sentence = sentence.trim();
                         
@@ -97,6 +96,7 @@ public class Main {
         for (String word : sentence.split(" ")) {
             if (!stopWordList.contains(word)) {
                 word = stemmer.stem(word);
+                word.replace("\'", "");
                 sent.add(word);
             }
         }
