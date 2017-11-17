@@ -12,6 +12,8 @@ public class Main {
         Options options = new Options();
         options.addRequiredOption("f", "file", true, "input file to process");
         options.addOption("h", false, "print this help message");
+        // Add print statement with -s 
+        options.addOption("s", false, "print final array of words");
 
         CommandLineParser parser = new DefaultParser();
 
@@ -28,34 +30,52 @@ public class Main {
 		if (!new File(filename).exists()) {
 			System.err.println("file does not exist "+filename);
 			System.exit(1);
-		}
+		} else {
+                    // Part 1 
+        
+                    String s = "";
+                    int sentenceCount = 0;
+                    
+                    // Create Scanner
+                    Scanner file = new Scanner(new File(filename));
+                    file.useDelimiter("[.?!]");
+                    // Create array to put words into
+                    List<String> retVal = new ArrayList<>();
+                    
+                    String sentence;
+                    while (file.hasNext()) {
+                        List<String> sent = new ArrayList<>();
+                        sentence = file.next();
+                        sentence = sentence.replaceAll("\\r?\\n", " ");
+                        sentence = sentence.replace("--", "");
+                        sentence = sentence.replace(",", "");
+                        sentence = sentence.replace(":", "");
+                        sentence = sentence.replace(";", "");
+                        sentence = sentence.replace("\"", "");
+                        sentence = sentence.replace("\'", "");
+                        sentence = sentence.toLowerCase();
+                        sentence = sentence.trim();
+                        if (cmd.hasOption("s")) {
+                            System.out.println(sentence);
+                        }
+                    }
+                    
+        
+                    // String[] sentenceArray = sentence.toArray(new String[0]);
+        
+
+                    // If "s" is added to the argument, print the array.
+                    
+                    file.close();
+        }
 
         if (cmd.hasOption("h")) {
             HelpFormatter helpf = new HelpFormatter();
             helpf.printHelp("Main", options, true);
             System.exit(0);
-            
-        // Part 1 
         
-        String s = "";
+
         
-        // Create Scanner
-        Scanner file = new Scanner(new File(filename)).useDelimiter(".!?\\s");
-        
-        // Create array to put sentences into
-        List<String> sentence = new ArrayList<>();
-        
-        while (file.hasNext()) {
-            s = file.next();
-            sentence.add(s);
-        }
-        file.close();
-        
-        String[] sentenceArray = sentence.toArray(new String[0]);
-        
-        for (String x : sentenceArray) {
-            System.out.println(x);
-        }
         }
     }
 }
