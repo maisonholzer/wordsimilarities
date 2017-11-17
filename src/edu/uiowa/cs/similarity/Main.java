@@ -32,49 +32,20 @@ public class Main {
 			System.exit(1);
 		} else {
                     // Part 1 
-        
-                    String s = "";
                     int sentenceCount = 0;
                     
                     // Create Scanner
                     Scanner file = new Scanner(new File(filename));
                     file.useDelimiter("[.?!]");
                     
-                    // Create Stop Words List
-                    Set<String> stopWordList = new HashSet<String>();
-                    Scanner stopWordsScanner = new Scanner(new File("../stopwords.txt"));
-                    String x = "";
-                    while (stopWordsScanner.hasNext()) {
-                        x = stopWordsScanner.nextLine();
-                        stopWordList.add(x);
-                    }
-                    
-                    // Create array to put words into
+                    // Create array to put sentence arrays into
                     List<List<String>> retVal = new ArrayList<>();
                     
                     String sentence;
                     while (file.hasNext()) {
                         sentence = file.next();
                         
-                        sentence = sentence.replaceAll("\\r?\\n", " ");
-                        sentence = sentence.replace("--", "");
-                        sentence = sentence.replace(",", "");
-                        sentence = sentence.replace(":", "");
-                        sentence = sentence.replace(";", "");
-                        sentence = sentence.replace("\"", "");
-                        // sentence = sentence.replace("\'", "");
-                        sentence = sentence.toLowerCase();
-                        sentence = sentence.trim();
-                        
-                        List<String> sent = new ArrayList<>();
-                        // Stem the words using PorterStemmer and remove StopWords
-                        PorterStemmer stemmer = new PorterStemmer();
-                        for (String word : sentence.split(" ")) {
-                            if (!stopWordList.contains(word)) {
-                                word = stemmer.stem(word);
-                                sent.add(word);
-                            }
-                        }
+                        List<String> sent = stemAndRemoveStopWords(sentence);
                         
                         if (!(sent.toString().contains("[]"))) {
                             retVal.add(sent);
@@ -98,5 +69,38 @@ public class Main {
 
         
         }
+    }
+
+    private static List<String> stemAndRemoveStopWords(String sentence) throws IOException {
+        // Create Stop Words List
+        Set<String> stopWordList = new HashSet<String>();
+        Scanner stopWordsScanner = new Scanner(new File("../stopwords.txt"));
+        String x = "";
+        while (stopWordsScanner.hasNext()) {
+            x = stopWordsScanner.nextLine();
+            stopWordList.add(x);
+        }
+        
+        sentence = sentence.replaceAll("\\r?\\n", " ");
+        sentence = sentence.replace("--", "");
+        sentence = sentence.replace(",", "");
+        sentence = sentence.replace(":", "");
+        sentence = sentence.replace(";", "");
+        sentence = sentence.replace("\"", "");
+        // sentence = sentence.replace("\'", "");
+        sentence = sentence.toLowerCase();
+        sentence = sentence.trim();
+                        
+        List<String> sent = new ArrayList<>();
+        // Stem the words using PorterStemmer and remove StopWords
+        PorterStemmer stemmer = new PorterStemmer();
+        for (String word : sentence.split(" ")) {
+            if (!stopWordList.contains(word)) {
+                word = stemmer.stem(word);
+                sent.add(word);
+            }
+        }
+        
+        return sent;
     }
 }
