@@ -10,10 +10,10 @@ import java.util.Comparator;
 public class ComparatorForDuplicates implements Comparator<Double>{
     
 public int compare(Double a, Double b)
-{
-if (a>b) {return 1;}
-if (a==b) {return 1;}
-else {return -1;}
-}    
+    {
+    if (a>b) {return 1;}
+    if (a==b) {return 1;}
+    else {return -1;}
+    }    
     
 }

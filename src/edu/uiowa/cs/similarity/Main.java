@@ -134,7 +134,6 @@ public class Main {
     return QueryWordStemmed;    
     }
     
-    
     // 
     public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScores(List<String> SemanticDimension, List<List<Integer>> SemanticVecs, String queryword, VectorOperations m){
     int index = SemanticDimension.indexOf(queryword);
