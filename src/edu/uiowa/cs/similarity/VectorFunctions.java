@@ -1,10 +1,7 @@
 package edu.uiowa.cs.similarity;
 
 import java.util.List;
-/**
- *
- * @author User
- */
+
 //This interface contains potential operations using vectors
 public interface VectorFunctions<InT, OutT> {
 //        public List<OutT> CreateVector(Integer n);

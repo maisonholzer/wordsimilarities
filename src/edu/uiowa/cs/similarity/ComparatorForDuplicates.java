@@ -5,10 +5,7 @@
  */
 package edu.uiowa.cs.similarity;
 import java.util.Comparator;
-/**
- *
- * @author User
- */
+
 //This comparator allows duplicate keys to be stored in the TreeMap 
 public class ComparatorForDuplicates implements Comparator<Double>{
     

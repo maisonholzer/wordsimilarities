@@ -2,10 +2,7 @@ package edu.uiowa.cs.similarity;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- *
- * @author User
- */
+
 public class VectorOperations implements VectorFunctions<Integer, Double>{
         @Override
         public Double DotMultiply(List<Integer> x, List<Integer> y)

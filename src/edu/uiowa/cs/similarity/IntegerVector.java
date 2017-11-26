@@ -28,5 +28,3 @@ public class IntegerVector{
             this.vector.set(index, y);
         }     
 }
-    
-

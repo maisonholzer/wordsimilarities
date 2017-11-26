@@ -63,6 +63,7 @@ public class Main {
                             sentenceCount++;
                         }
                     }
+                    
                     //turn unique words in HashSet into List 
                     Iterator<String> SemanticVDimension = SemanticVecDimension.iterator(); 
                     List<String> SemanticVectorDimension = new ArrayList();
