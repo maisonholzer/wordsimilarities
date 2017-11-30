@@ -1,9 +1,10 @@
 What is the status of your project?
-
+Part1, 2, and 3 are all done. 
 
 
 What has each team done to ensure the success of the team?
-
+Each person tackle certain parts and we get together to discuss our implementation choices. 
 
 
 What can each team member do going forward to ensure the success of the team?
+Keep on working together. 
