@@ -1,15 +1,16 @@
 Written answers for part 4. 
 
 a)	What data structure did you finally use for vectors? What is the asymptotic memory usage of a vector? Of all of your vectors? Is this memory usage reasonable and why?
-We use a List to represent a vector. If N is the number of unique words, the memory usage for a vector is O(N). For all vectors for all the unique words, the memory usage would be O(N2). This memory usage is not reasonable because as the number of unique words N increases, the memory needed would be N2.
+
+We used a List to represent a vector. If N is the number of unique words, the memory usage for a vector is O(N). For each vectors for all the unique words, the memory usage would be O(N^2). This memory usage is not reasonable because, as the number of unique words N increases, the memory needed would be N^2.
  
 b) What algorithm did you finally use for cosine similarity? What is its asymptotic running time? Is this running time reasonable and why?
+
 For cosine similarity, we have to visit every element of the vector (List) to perform the multiplication of two vectors being compared. The running time is O(N), which is inefficient if the vector is sparse. 
  
-c) What algorithm did you finally use for the Top-J calculation? What is its asymptotic
-running time (might be in terms of J, too)? Is this running time reasonable and why?
+c) What algorithm did you finally use for the Top-J calculation? What is its asymptoticrunning time (might be in terms of J, too)? Is this running time reasonable and why?
 
-For the top-J calculation, we computed the cosine similarity scores comparing all unique words with query word (this part would cost O(N2) running time) and stored the scores for all unique words in a TreeMap (Nlog(N) for storing N elements), which guarantees log(N) time for containsKey, get, put, and remove operations. All items in the tree is then returned as a descending list, and the top-J words are returned by an iterator (O(J)). 
+For the Top-J calculation, we computed the cosine similarity scores for comparing all unique words with query word (this part would cost O(N2) running time) and stored the scores for all unique words in a TreeMap (Nlog(N) for storing N elements), which guarantees log(N) time for containsKey, get, put, and remove operations. All items in the tree is then returned as a descending list and the Top-J words are returned by an iterator (O(J)). 
 
 O(N2) + O(Nlog(N)) + O(J) ~ O(N2). 
 
