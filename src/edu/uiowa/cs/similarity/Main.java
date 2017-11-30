@@ -153,7 +153,7 @@ public class Main {
     //System.out.println("Words are" + Names);
     //System.out.println("Scores are" + Scores);
     Map<Double, String> TreeValues= SimilarityRanking.descendingMap();  
-    System.out.println("Mappings(Score, word) in this tree is" + TreeValues);
+    //System.out.println("Mappings(Score, word) in this tree is" + TreeValues);
     Iterator<Map.Entry<Double, String>> SimilarityToQuery = TreeValues.entrySet().iterator();
     return SimilarityToQuery;
     }
@@ -200,7 +200,7 @@ public class Main {
             x = stopWordsScanner.nextLine();
             stopWordList.add(x);
         }
-        System.out.println(sentence);
+        //System.out.println(sentence);
         sentence = sentence.replaceAll("\\r?\\n", " ");
         sentence = sentence.replace("--", "");
         sentence = sentence.replace(",", "");
