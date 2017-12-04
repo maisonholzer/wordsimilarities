@@ -5,30 +5,30 @@
  */
 package edu.uiowa.cs.similarity;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 /**
  *
  * @author User
  */
 public class IntegerVectorMap {
 
-public HashMap<String, Integer> MapOfCoOccurances;  
+public TreeMap<String, Integer> MapOfCoOccurances;  
 public String name;
 
 public IntegerVectorMap(String MapName){
 
-MapOfCoOccurances = new HashMap<>();
+MapOfCoOccurances = new TreeMap<>();
 this.name = MapName;
 }    
  
-public HashMap<String, Integer> addEntry(String word, Integer CoOccur){
+public TreeMap<String, Integer> addEntry(String word, Integer CoOccur){
 
 MapOfCoOccurances.put(word, CoOccur);    
 
 return MapOfCoOccurances;} 
     
 
-public HashMap<String, Integer> getMap()
+public TreeMap<String, Integer> getMap()
 {
 return this.MapOfCoOccurances;
 }

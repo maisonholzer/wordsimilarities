@@ -1,6 +1,6 @@
 package edu.uiowa.cs.similarity;
 import java.util.List;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Arrays;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class VectorOperations implements VectorFunctions<HashMap<String, Integer>>{
+public class VectorOperations implements VectorFunctions<TreeMap<String, Integer>>{
         @Override
-        public Double DotMultiply(HashMap<String, Integer> map1, HashMap<String, Integer> map2)
+        public Double DotMultiply(TreeMap<String, Integer> map1, TreeMap<String, Integer> map2)
         {   
             int dotProduct = 0;
             Set<String> KeysMap1 = new TreeSet<>();
@@ -28,7 +28,7 @@ public class VectorOperations implements VectorFunctions<HashMap<String, Integer
         }
         
         @Override
-        public Double absMultiply(HashMap<String, Integer> map1, HashMap<String, Integer> map2)
+        public Double absMultiply(TreeMap<String, Integer> map1, TreeMap<String, Integer> map2)
         {
             int sumSquares1 = 0;
             int sumSquares2 = 0;

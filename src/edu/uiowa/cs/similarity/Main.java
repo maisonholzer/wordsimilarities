@@ -149,7 +149,7 @@ public class Main {
         double absProduct = m.absMultiply(QueryWordVector.getMap(), SemanticVecs.get(SemanticDimension.get(i)).getMap());
         double CosineSimilarity = DotProduct/absProduct;    
         SimilarityRanking.put(CosineSimilarity, SemanticDimension.get(i));
-        
+    //>>>    
         }
     //System.out.println("Words are" + Names);
     //System.out.println("Scores are" + Scores);
