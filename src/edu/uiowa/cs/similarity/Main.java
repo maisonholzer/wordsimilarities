@@ -11,6 +11,7 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        final long startTime = System.currentTimeMillis();
         Options options = new Options();
         options.addRequiredOption("f", "file", true, "input file to process");
         options.addOption("h", false, "print this help message");
@@ -71,18 +72,19 @@ public class Main {
                     while (SemanticVDimension.hasNext())
                             {SemanticVectorDimension.add(SemanticVDimension.next());}
                     
-                    List<List<Integer>> DescriptorVectorsforAllUniqueWords= SemanticVectorsforAllUniqueWords(retVal, SemanticVectorDimension); 
+                    TreeMap<String, IntegerVectorMap> DescriptorVectorsforAllUniqueWords= SemanticVectorsforAllUniqueWords(retVal, SemanticVectorDimension); 
                     
                     // If "s" is added to the argument, print the array.
                     if (cmd.hasOption("s")) { // move this back down somehow once finished
                         System.out.println(retVal.toString());
                         System.out.println("Number of Sentences: " + sentenceCount);}
                         
-                    if (cmd.hasOption("v")){
+                    if (cmd.hasOption("v")){//this had error
                         System.out.println("Unique words and their descriptor vectors");
                         for (int i = 0; i < SemanticVectorDimension.size(); i++)
-                            {System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(i));}}
-                    
+                            //{System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(SemanticVectorDimension.get(i)).getMap().descendingMap());}}
+                             {System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(SemanticVectorDimension.get(i)).getMap().entrySet());}}
+                    System.out.println("completed up to the cosine similarity part");
                     if (cmd.hasOption("t")){
                         String queryInput = cmd.getOptionValue("t");
                         List<String> QueryInputList = ProcessingQueryInput(queryInput);
@@ -107,7 +109,8 @@ public class Main {
                                 }
                         }
                     }      
-                file.close();   
+                file.close();   final long endTime = System.currentTimeMillis();
+                System.out.println("Excution time is:" + (endTime - startTime));
                 }
         
         if (cmd.hasOption("h")) {
@@ -135,20 +138,18 @@ public class Main {
     }
     
     // 
-    public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScores(List<String> SemanticDimension, List<List<Integer>> SemanticVecs, String queryword, VectorOperations m){
-    int index = SemanticDimension.indexOf(queryword);
-    List<Integer> QueryWordVector = SemanticVecs.get(index);    
+    public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScores(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
+    //int index = SemanticDimension.indexOf(queryword);
+    IntegerVectorMap QueryWordVector = SemanticVecs.get(queryword);    
     TreeMap<Double, String> SimilarityRanking = new TreeMap<>(new ComparatorForDuplicates());  
-    List<Double> Scores = new ArrayList<>();
-    List<String> Names = new ArrayList<>();
+    //compare query word with every word 
     for (int i = 0; i < SemanticDimension.size(); i++)
         {
-        double DotProduct = m.DotMultiply(QueryWordVector, SemanticVecs.get(i)); 
-        double absProduct = m.absMultiply(QueryWordVector, SemanticVecs.get(i));
+        double DotProduct = m.DotMultiply(QueryWordVector.getMap(), SemanticVecs.get(SemanticDimension.get(i)).getMap()); 
+        double absProduct = m.absMultiply(QueryWordVector.getMap(), SemanticVecs.get(SemanticDimension.get(i)).getMap());
         double CosineSimilarity = DotProduct/absProduct;    
         SimilarityRanking.put(CosineSimilarity, SemanticDimension.get(i));
-        Names.add(SemanticDimension.get(i));
-        Scores.add(CosineSimilarity);
+        
         }
     //System.out.println("Words are" + Names);
     //System.out.println("Scores are" + Scores);
@@ -158,37 +159,59 @@ public class Main {
     return SimilarityToQuery;
     }
     
-    private static List<List<Integer>> SemanticVectorsforAllUniqueWords(List<List<String>> sentences, List<String> SemanticVec){
-    List<List<Integer>> DescriptorVectors = new ArrayList<>();
-                    for (int i = 0; i<SemanticVec.size(); i++)
+    private static TreeMap<String, IntegerVectorMap> SemanticVectorsforAllUniqueWords(List<List<String>> sentences, List<String> SemanticVec){
+    //A TreeMap containing words (keys) and their respective IntegerVectors which are TreeMaps <String, Integer> 
+    TreeMap<String, IntegerVectorMap> VectorsForAllWords = new TreeMap<>();
+    //initialize a map for every unique word
+        for (int i = 0; i < SemanticVec.size(); i++)
+            {//start a new map for each word named after itself 
+             //For example, "Dog" is a map containing <word, coOccurance> for the word Dog with every other unique word
+            IntegerVectorMap WordMap = new IntegerVectorMap(SemanticVec.get(i));
+            VectorsForAllWords.put(SemanticVec.get(i), WordMap);
+            }
+    
+    for (int i = 0; i<SemanticVec.size(); i++)
                         {                    
-                        List<Integer> WordVector = CreateSemanticVectorforOneWord(sentences,SemanticVec, SemanticVec.get(i));       
-                        DescriptorVectors.add(WordVector);
+                        VectorsForAllWords = CreateSemanticVectorforOneWord(sentences,SemanticVec, SemanticVec.get(i), VectorsForAllWords);       
+                        //DescriptorVectors.add(WordVector);
                         }
-    return DescriptorVectors;
+    return VectorsForAllWords;
     }
     
     //create semantic descriptor vector for each unique word.
-    private static List<Integer> CreateSemanticVectorforOneWord(List<List<String>> sentences, List<String> SemanticVec, String word){
+    private static TreeMap<String, IntegerVectorMap> CreateSemanticVectorforOneWord(List<List<String>> sentences, List<String> SemanticVec, String word, TreeMap<String, IntegerVectorMap> VectorsForAllWords){
     //create a new IntegerVector(specified dimension)
-    IntegerVector WordVector = new IntegerVector(SemanticVec.size()); 
-    
-    for (int i = 0; i < SemanticVec.size(); i ++) //check this word + every combination in the Semantic Vector
-        {int CoOccur = 0; 
-        for (int j = 0; j < sentences.size(); j++)//check if they co-occur for every sentence
-        {
-            if (sentences.get(j).contains(word)){
-                List<String> ThisSentence = new ArrayList<>();
-                ThisSentence.addAll(sentences.get(j));
-                ThisSentence.remove(word);//remove the current word so we can detect co-occurance of the same word
-                if (ThisSentence.contains(SemanticVec.get(i)))
-                    {CoOccur++;}
-            }    
-        }//have checked every sentence for co-occurance
-        //This word co-occur "CoOccur" times with word i in the Semantic Vector
-        WordVector.addArgument(i, CoOccur);
+    //IntegerVector WordVector = new IntegerVector(SemanticVec.size()); 
+    //only need to check unique words occuring after this word in the list
+    int index = SemanticVec.indexOf(word);
+    for (int i = index; i < SemanticVec.size(); i ++) //check this word + every combination in the Semantic Vector
+        {//only start checking CoOccurances if the map doesn't already have an entry with that key 
+        //if (!VectorsForAllWords.get(word).getMap().containsKey(SemanticVec.get(i))) {
+            int CoOccur = 0;
+                             
+            for (int j = 0; j < sentences.size(); j++)//check if they co-occur for every sentence
+            {
+                if (sentences.get(j).contains(word)){
+                    List<String> ThisSentence = new ArrayList<>();
+                    ThisSentence.addAll(sentences.get(j));
+                    ThisSentence.remove(word);//remove the current word so we can detect co-occurance of the same word
+                    if (ThisSentence.contains(SemanticVec.get(i)))
+                        {CoOccur++; }
+                }    
+            }//have checked every sentence for co-occurance
+            //This word co-occur "CoOccur" times with word i in the Semantic Vector
+        
+            //WordVector.addArgument(i, CoOccur);
+            //add coOccurance for both words
+            if (CoOccur != 0){    
+                //update Map for target "word"
+                VectorsForAllWords.get(word).addEntry(SemanticVec.get(i), CoOccur);
+                //update map for the word being checked against 
+                VectorsForAllWords.get(SemanticVec.get(i)).addEntry(word, CoOccur);}
+            //} if does not already have entry
         }
-    return WordVector.getVector();
+    //return WordVector.getVector();
+    return VectorsForAllWords;
     }
     
     private static List<String> stemAndRemoveStopWords(String sentence) throws IOException {
@@ -206,6 +229,8 @@ public class Main {
         sentence = sentence.replace(",", "");
         sentence = sentence.replace(":", "");
         sentence = sentence.replace(";", "");
+        sentence = sentence.replace('“',' ');
+        sentence = sentence.replace('”',' ');
         sentence = sentence.replace("\"", "");
         sentence = sentence.toLowerCase();
         sentence = sentence.trim();
