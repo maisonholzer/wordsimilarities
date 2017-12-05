@@ -145,7 +145,7 @@ public class Main {
         {
         double DotProduct = m.DotMultiply(QueryWordVector, SemanticVecs.get(i)); 
         double absProduct = m.absMultiply(QueryWordVector, SemanticVecs.get(i));
-        double CosineSimilarity = DotProduct/absProduct;    
+        double CosineSimilarity = DotProduct/absProduct;
         SimilarityRanking.put(CosineSimilarity, SemanticDimension.get(i));
         Names.add(SemanticDimension.get(i));
         Scores.add(CosineSimilarity);
@@ -183,8 +183,8 @@ public class Main {
                 ThisSentence.remove(word);//remove the current word so we can detect co-occurance of the same word
                 if (ThisSentence.contains(SemanticVec.get(i)))
                     {CoOccur++;}
-            }    
-        }//have checked every sentence for co-occurance
+            }
+        } //have checked every sentence for co-occurance
         //This word co-occur "CoOccur" times with word i in the Semantic Vector
         WordVector.addArgument(i, CoOccur);
         }
