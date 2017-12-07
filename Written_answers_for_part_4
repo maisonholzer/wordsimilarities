@@ -6,7 +6,7 @@ We used a List to represent a vector. If N is the number of unique words, the me
  
 b) What algorithm did you finally use for cosine similarity? What is its asymptotic running time? Is this running time reasonable and why?
 
-For cosine similarity, we have to visit every element of the vector (List) to perform the multiplication of two vectors being compared. The running time is O(N), which is inefficient if the vector is sparse. 
+For cosine similarity, we have to visit every element of the Vector (List) to perform the multiplication of two vectors being compared. The running time is O(N), which is now efficient. 
  
 c) What algorithm did you finally use for the Top-J calculation? What is its asymptoticrunning time (might be in terms of J, too)? Is this running time reasonable and why?
 
@@ -17,6 +17,8 @@ O(N2) + O(Nlog(N)) + O(J) ~ O(N2).
 d) What improvements did you make from your original code to make it run faster? Give an example of your running time measurements before and after the changes. Describe the information that informed your choices (asymptotic running time analysis, asymptotic memory analysis, and/or profiling).
 
 We plan to implement new data structures to take into consideration that the vectors would be sparse for large texts. 
+**Update**
+We switched our implementation to speed up our process.  First, our Lists are now TreeMaps, which can now run at O(logN).  We also no longer worry about scores that equal 0, that way we no longer have to waste time calculating on them.  
 
 N=the number of unique words in the text file
 S=the maximum number of unique words any word appears with
