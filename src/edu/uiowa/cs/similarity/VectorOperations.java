@@ -1,11 +1,5 @@
 package edu.uiowa.cs.similarity;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 public class VectorOperations implements VectorFunctions<TreeMap<String, Integer>>{
         @Override
@@ -47,24 +41,44 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
         
         @Override
         public Double negEuc(TreeMap<String, Integer> map1, TreeMap<String, Integer> map2) {
-            // Map 1
-            Collection<Integer> Map1Values = map1.values();
-            Iterator<Integer> IterMap1Values = Map1Values.iterator();
-            System.out.println("Map1Values as an array: " + Map1Values.toArray());
-            // Map 2
-            Collection<Integer> Map2Values = map2.values();
-            Iterator<Integer> IterMap2Values = Map2Values.iterator();
-            System.out.println("Map2Values as an array: " + Map2Values.toArray());
             double sum = 0;
-            while (IterMap1Values.hasNext() && IterMap2Values.hasNext()) {
-                sum += java.lang.Math.pow((IterMap1Values.next() - IterMap2Values.next()), 2);
+            // Map 1
+            Set<String> KeysMap1 = new TreeSet<>();
+            KeysMap1 = map1.keySet();
+            Iterator<String> KeysForMap1 = KeysMap1.iterator();
+            List<String> KeyListMap1 = new ArrayList<>();
+            while (KeysForMap1.hasNext()) {
+                KeyListMap1.add(KeysForMap1.next());
             }
-            return (java.lang.Math.sqrt(sum)) * (-1);
+            
+            for (int i = 0; i < KeyListMap1.size(); i++) {
+                //check if map2 contains the word too with an associated co-Occurrance score
+                if (map2.containsKey(KeyListMap1.get(i))) {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)) - map2.get(KeyListMap1.get(i)), 2);
+                    map2.remove(KeyListMap1.get(i));
+                }
+                else {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)), 2);
+                }
+            }
+            // Map 2
+            Set<String> KeysMap2 = new TreeSet<>();
+            KeysMap2 = map2.keySet();
+            Iterator<String> KeysForMap2 = KeysMap2.iterator();
+            List<String> KeyListMap2 = new ArrayList<>();
+            while (KeysForMap2.hasNext()) {
+                KeyListMap2.add(KeysForMap2.next());
+            }
+            for (int j = 0; j < KeyListMap2.size(); j++) {
+                sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j)), 2);
+                
+            }
+            return java.lang.Math.sqrt(sum) * (-1);
         }
         
         @Override
         public Double eucNorm(TreeMap<String, Integer> map1, TreeMap<String, Integer> map2) {
-            // Map 1
+            // Map 1 v1 distance
             Collection<Integer> Map1Values = map1.values();
             Iterator<Integer> IterMap1Values = Map1Values.iterator();
             double v1temp = 0;
@@ -72,8 +86,7 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
                 v1temp += java.lang.Math.pow(IterMap1Values.next(), 2);
             }
             double v1dist = java.lang.Math.sqrt(v1temp);
-            
-            // Map 2
+            // Map 2 v2 distance
             Collection<Integer> Map2Values = map2.values();
             Iterator<Integer> IterMap2Values = Map2Values.iterator();
             double v2temp = 0;
@@ -83,10 +96,38 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
             double v2dist = java.lang.Math.sqrt(v2temp);
             
             double sum = 0;
-            while (IterMap1Values.hasNext() && IterMap2Values.hasNext()) {
-                sum += java.lang.Math.pow(((IterMap1Values.next()/v1dist) - (IterMap2Values.next()/v2dist)), 2);
+            // Map 1
+            Set<String> KeysMap1 = new TreeSet<>();
+            KeysMap1 = map1.keySet();
+            Iterator<String> KeysForMap1 = KeysMap1.iterator();
+            List<String> KeyListMap1 = new ArrayList<>();
+            while (KeysForMap1.hasNext()) {
+                KeyListMap1.add(KeysForMap1.next());
             }
-            return (java.lang.Math.sqrt(sum)) * (-1);
+            
+            for (int i = 0; i < KeyListMap1.size(); i++) {
+                //check if map2 contains the word too with an associated co-Occurrance score
+                if (map2.containsKey(KeyListMap1.get(i))) {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i))/v1dist - map2.get(KeyListMap1.get(i))/v2dist, 2);
+                    map2.remove(KeyListMap1.get(i));
+                }
+                else {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i))/v1dist, 2);
+                }
+            }
+            // Map 2
+            Set<String> KeysMap2 = new TreeSet<>();
+            KeysMap2 = map2.keySet();
+            Iterator<String> KeysForMap2 = KeysMap2.iterator();
+            List<String> KeyListMap2 = new ArrayList<>();
+            while (KeysForMap2.hasNext()) {
+                KeyListMap2.add(KeysForMap2.next());
+            }
+            for (int j = 0; j < KeyListMap2.size(); j++) {
+                sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j))/v2dist, 2);
+                
+            }
+            return java.lang.Math.sqrt(sum) * (-1);
         }
     }
 
