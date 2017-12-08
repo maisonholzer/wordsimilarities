@@ -201,16 +201,19 @@ public class Main {
     public static List<TreeMap> kMeansClustering(List<IntegerVectorMap> InitialPoints, List<String> UniqueWords, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k, Integer iterations){
     VectorOperations m = new VectorOperations();
     //Words in each cluster is stored in a treemap
-    List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
-    //Create a treeMap for each cluster, storing <distance, word> 
-    for (int r = 0; r < k; r ++)
-    {   
-        TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
-        ListofTreeMapClusters.add(cluster);
-    }
+    
     //each mean is a DoubleVectorMap
     List<DoubleVectorMap> ListofMeans = new ArrayList<>();
     //initialize k new TreeMaps for storing key (distance) and value (String: word)        
+    List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
+    
+    //Create a treeMap for each cluster, storing <distance, word> 
+        for (int r = 0; r < k; r ++)
+        {   
+            TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
+            ListofTreeMapClusters.add(cluster);
+        }    
+    
     
     //make List of initial points into List of treeMaps with String, Double as Key, Value    
     //create a list of means storing TreeMaps<String, Double> for each mean 
@@ -238,37 +241,60 @@ public class Main {
     // update for i iterations
     for (int i = 0; i<iterations; i++)
         {
+        
+           
+            
         //calculate distances to all means for each unique word    
         for (int j = 0; j < VectorsAllWords.size(); j ++){
-            System.out.println("+++++++++++++++++++++++++++++++++");
+            //System.out.println("+++++++++++++++++++++++++++++++++");
             TreeMap<Double, DoubleVectorMap> TreeofDistances = new TreeMap<>();
             for (int h = 0; h < k; h ++)//compute distances to all means, there is k means 
                 { 
                 double distanceToMean = m.negEucD(VectorsAllWords.get(UniqueWords.get(j)).getMap(), ListofMeans.get(h).getMap());//InitialPoints.get(h).getMap()
                 //each word has a TreeofDistances, containing <Distance, Mean<DoubleVectorMap>> to store distance to each mean
-                System.out.println("computing distance of word " + UniqueWords.get(j) + " to Mean " + ListofMeans.get(h).getName() + " distance is " + distanceToMean); 
+                //System.out.println("computing distance of word " + UniqueWords.get(j) + " to Mean " + ListofMeans.get(h).getName() + " distance is " + distanceToMean); 
                 TreeofDistances.put(distanceToMean, ListofMeans.get(h));
                 
                 }
             //return the <distance, mean point> pair with the smallest distance.
             Map.Entry<Double, DoubleVectorMap> ClosestMean = TreeofDistances.lastEntry();
             String ClusterWordBelongsTo = ClosestMean.getValue().getName();
-            System.out.println("this word belongs to mean " + ClusterWordBelongsTo);
+            //System.out.println("this word belongs to mean " + ClusterWordBelongsTo);
             //put Distance, IntegerWordMap into the right cluster Word belongs to 
             ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(ClosestMean.getKey(), VectorsAllWords.get(UniqueWords.get(j))); 
-            System.out.println("for this word put in TreeMap key " + ClosestMean.getKey() + "Value" + VectorsAllWords.get(UniqueWords.get(j)));
+            //System.out.println("for this word put in TreeMap key " + ClosestMean.getKey() + "Value" + VectorsAllWords.get(UniqueWords.get(j)));
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
         //after adding all the words, call update Mean
         //List of Means is a List of <String, Double>
-        ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);    
+        ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
+        List<List<Map.Entry<String, Double>>> ChangingMeans = storeChangingMeans(ListofMeans); 
+        System.out.println("Means updated for iteration " + i + ChangingMeans);
         }//end of iterations for loop 
     
     return ListofTreeMapClusters;
     }
 
+    public static List<List<Map.Entry<String, Double>>> storeChangingMeans(List<DoubleVectorMap> ListofMeans){
+    List<List<Map.Entry<String, Double>>> MeansforAllClusters = new ArrayList<>();
+    for (int i = 0; i < ListofMeans.size(); i++)
+        {
+        List<Map.Entry<String, Double>> MeansforOneCluster = new ArrayList<>();
+        Map<String, Double> MeansforThisCluster = ListofMeans.get(i).getMap().descendingMap();
+        Iterator<Map.Entry<String, Double>> PrintMeans = MeansforThisCluster.entrySet().iterator();
+            //add the means DoubleVectorMap mappings for one cluster
+            while (PrintMeans.hasNext() == true){
+            MeansforOneCluster.add(PrintMeans.next());}
+        MeansforAllClusters.add(MeansforOneCluster); 
+            
+        
+        }
+    return MeansforAllClusters; 
+    }
+    
+    
     public static List<DoubleVectorMap> updateMeans(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListofTreeMapClusters){
-    System.out.println("Update means is called");
-//update every mean
+    //System.out.println("Update means is called");
+    //update every mean
     for (int i = 0; i < ListofMeans.size(); i++){
         //for every mean, get a set to store words that need to be computed and updated
         TreeSet<String> NeedsUpdate = new TreeSet<>();
@@ -277,37 +303,37 @@ public class Main {
         while (AllWordsMaps.hasNext() == true){
             IntegerVectorMap currentWordVec = AllWordsMaps.next();
             Set<String> DimensionsOneWord = currentWordVec.getMap().keySet();
-            System.out.println("Update Mean cluster" + i + DimensionsOneWord);
+            //System.out.println("Update Mean cluster" + i + DimensionsOneWord);
             NeedsUpdate.addAll(DimensionsOneWord);
             //Iterator<String> DimensionsOneWord = currentWordVec.getMap().values().iterator();//a collection of all dimensions associated with one word
             
             }//now the Needs Update set contains all dimensions for that cluster
         //now, average values for all vectors for each word in that cluster
         Iterator<String> WordsUpdate = NeedsUpdate.iterator();
-        System.out.println("needs update set" + NeedsUpdate);
+        //System.out.println("needs update set" + NeedsUpdate);
         while (WordsUpdate.hasNext() == true){
             String key = WordsUpdate.next();
-            System.out.println("For cluster" + i + "dimensions used in updatemMean are " + key);
+            //System.out.println("For cluster" + i + "dimensions used in updatemMean are " + key);
             //for each IntegerVectorMap in that cluster, get value for key
             //iterate over all IntegerVectorMaps in one cluster
             Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).values().iterator();
             int sum = 0;
             while (WordsMapsInCluster.hasNext() == true){
-                System.out.println("Integer Vec iterator has next");
+                //System.out.println("Integer Vec iterator has next");
                 IntegerVectorMap currentIntegerMap = WordsMapsInCluster.next();
-                System.out.println("current interger word map in cluster is " + currentIntegerMap.getName());
+                //System.out.println("current interger word map in cluster is " + currentIntegerMap.getName());
                 //need to check if Map even contains an entry for the key word 
                 if (currentIntegerMap.getMap().containsKey(key) == true){
                     sum = sum + currentIntegerMap.getMap().get(key);}
-                System.out.println("sum is now" + sum);
+                //System.out.println("sum is now" + sum);
                 }//now sum is the sum of all values for one word, Dog, in the cluster
-            System.out.println("done for key word " + key + "for cluster" + i + " and sum is" + sum);
+            //System.out.println("done for key word " + key + "for cluster" + i + " and sum is" + sum);
             
             double averageScoreThisWord = ((double) sum)/((double) ListofTreeMapClusters.get(i).size());
-            System.out.println("Averaged score for word" + averageScoreThisWord);
-            System.out.println("+++++++++++Mean before update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
+            //System.out.println("Averaged score for word" + averageScoreThisWord);
+            //System.out.println("+++++++++++Mean before update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
             ListofMeans.get(i).addEntry(key, averageScoreThisWord);//now, updated one dimension for the mean vector
-            System.out.println("+++++++++++Mean after update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
+            //System.out.println("+++++++++++Mean after update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
         }
             
     }

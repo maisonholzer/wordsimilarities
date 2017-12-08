@@ -132,7 +132,7 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
             return java.lang.Math.sqrt(sum) * (-1);
         }
     
-///Eucluean for doubles 
+        ///Eucluean for one integer map and one double map (for computing Semantic Vectors with means) 
         @Override
         public Double negEucD(TreeMap<String, Integer> map1, TreeMap<String, Double> map2) {
             double sum = 0;
