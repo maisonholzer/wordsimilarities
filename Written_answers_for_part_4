@@ -1,6 +1,6 @@
 Written answers for part 4. 
 
-a)	What data structure did you finally use for vectors? What is the asymptotic memory usage of a vector? Of all of your 
+a) What data structure did you finally use for vectors? What is the asymptotic memory usage of a vector? Of all of your 
 vectors? Is this memory usage reasonable and why?
 
 We used a List to represent a vector. If N is the number of unique words, the memory usage for a vector is O(N). For each 
