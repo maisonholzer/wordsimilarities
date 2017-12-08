@@ -44,7 +44,16 @@ public class VectorOperationsTest {
         
         assertEquals(-5.1961524227, result, 0.00001);
     }
-
+    
+    @Test
+    public void testNegEucEmpty() {
+        TreeMap<String, Integer> map1 = new TreeMap<>();
+        TreeMap<String, Integer> map2 = new TreeMap<>();
+        
+        VectorOperations m = new VectorOperations();
+        double result = m.negEuc(map1, map2);
+        assertEquals(0, result, 0.00001);
+    }
     /**
      * Test of eucNorm method, of class VectorOperations.
      */
@@ -73,6 +82,16 @@ public class VectorOperationsTest {
         double result = m.eucNorm(map1, map2);
         
         assertEquals(-1.27861316602, result, 0.00001);
+    }
+    
+    @Test
+    public void testEucNormEmpty() {
+        TreeMap<String, Integer> map1 = new TreeMap<>();
+        TreeMap<String, Integer> map2 = new TreeMap<>();
+        
+        VectorOperations m = new VectorOperations();
+        double result = m.eucNorm(map1, map2);
+        assertEquals(0, result, 0.00001);
     }
     
 }
