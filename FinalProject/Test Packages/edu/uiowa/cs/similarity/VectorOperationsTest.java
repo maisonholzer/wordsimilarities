@@ -45,6 +45,7 @@ public class VectorOperationsTest {
         assertEquals(-5.1961524227, result, 0.00001);
     }
     
+    // Test empty trees
     @Test
     public void testNegEucEmpty() {
         TreeMap<String, Integer> map1 = new TreeMap<>();
@@ -84,6 +85,7 @@ public class VectorOperationsTest {
         assertEquals(-1.27861316602, result, 0.00001);
     }
     
+    // Test empty trees
     @Test
     public void testEucNormEmpty() {
         TreeMap<String, Integer> map1 = new TreeMap<>();
