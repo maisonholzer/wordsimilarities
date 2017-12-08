@@ -32,4 +32,7 @@ public TreeMap<String, Integer> getMap()
 {
 return this.MapOfCoOccurances;
 }
+
+public String getName(){
+return this.name;}
 }

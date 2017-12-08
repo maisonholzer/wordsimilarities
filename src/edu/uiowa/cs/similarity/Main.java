@@ -21,6 +21,7 @@ public class Main {
         options.addOption("v", false, "print unique words along with their semantic vectors");
         options.addOption("t", "query", true, "query word for similarity");
         options.addOption("m", true, "use choice of similarity measure (cosine, euclidean distance, or normalized distance");
+        options.addOption("k", true, "compute k means");
         CommandLineParser parser = new DefaultParser();
 
         CommandLine cmd = null;
@@ -145,8 +146,16 @@ public class Main {
                     int iterations = Integer.parseInt(ProcessedInput.get(1));
                     List<IntegerVectorMap> InitialPoints = getKInitialPoints(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k);
                     List<TreeMap> ClustersOfWords = kMeansClustering(InitialPoints, SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k, iterations);
-                    System.out.println("Cluster 1" + ClustersOfWords.get(0).values());
-                    System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
+                    Iterator<IntegerVectorMap> cluster1 = ClustersOfWords.get(0).values().iterator();
+                    while (cluster1.hasNext())
+                        {System.out.println("Cluster 1 - " + cluster1.next().getName());}
+                    Iterator<IntegerVectorMap> cluster2 = ClustersOfWords.get(1).values().iterator();
+                    while (cluster2.hasNext())
+                        {System.out.println("Cluster 2 - " + cluster2.next().getName());}
+                    Iterator<IntegerVectorMap> cluster3 = ClustersOfWords.get(2).values().iterator();
+                    while (cluster3.hasNext())
+                        {System.out.println("Cluster 3 - " + cluster3.next().getName());}
+                    //System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
                     } 
                 file.close();   final long endTime = System.currentTimeMillis();
                 System.out.println("Excution time is:" + (endTime - startTime));
@@ -166,10 +175,10 @@ public class Main {
     Random RandomInitial = new Random();
     //put k random numbers in set 
     while (Indices.size() < k){
-    int Random = RandomInitial.nextInt(size);
-    Indices.add(Random);
+        int Random = RandomInitial.nextInt(size);
+        Indices.add(Random);
     }
-    
+    System.out.println("A set of random number is: " + Indices);
     //get the IntegerVectorMaps associated with these indices
     List<IntegerVectorMap> InitialPoints= new ArrayList<>();
     int Index = 0;
@@ -178,20 +187,28 @@ public class Main {
         String key = SemanticVec.get(Index);
         InitialPoints.add(VectorsAllWords.get(key));
         }
+    //can delete this
+    List<String> InitialNames = new ArrayList<>();
+    for (int l = 0; l < k; l++)
+        {InitialNames.add(InitialPoints.get(l).getName());}
+    
+    System.out.println("initial points are   " + InitialNames);
     return InitialPoints;
     }
     
+    //public static TreeMap<> CopyTreeMap()
+    
     public static List<TreeMap> kMeansClustering(List<IntegerVectorMap> InitialPoints, List<String> UniqueWords, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k, Integer iterations){
     VectorOperations m = new VectorOperations();
-    //Crea
+    //Words in each cluster is stored in a treemap
     List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
     //Create a treeMap for each cluster, storing <distance, word> 
     for (int r = 0; r < k; r ++)
     {   
-        TreeMap<Double, String> cluster = new TreeMap<>();
+        TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
         ListofTreeMapClusters.add(cluster);
     }
-  
+    //each mean is a DoubleVectorMap
     List<DoubleVectorMap> ListofMeans = new ArrayList<>();
     //initialize k new TreeMaps for storing key (distance) and value (String: word)        
     
@@ -214,30 +231,36 @@ public class Main {
         ListofMeans.add(n);
         }//Finished creating a List of Means as TreeMaps<String, Double> 
     
-    
+    System.out.println("Initial point " + InitialPoints.get(0).getMap().descendingMap());
+    System.out.println("Initial point " + ListofMeans.get(0).getMap().descendingMap());
+    System.out.println("Initial point " + InitialPoints.get(1).getMap().descendingMap());
+    System.out.println("Initial point " + ListofMeans.get(1).getMap().descendingMap());
     // update for i iterations
     for (int i = 0; i<iterations; i++)
         {
         //calculate distances to all means for each unique word    
         for (int j = 0; j < VectorsAllWords.size(); j ++){
-            //
+            System.out.println("+++++++++++++++++++++++++++++++++");
             TreeMap<Double, DoubleVectorMap> TreeofDistances = new TreeMap<>();
-            for (int h = 0; h < k; h ++)//compute distances to all means 
-                {  
-                double distanceToMean = m.eucNorm(VectorsAllWords.get(UniqueWords.get(j)).getMap(), InitialPoints.get(h).getMap());
+            for (int h = 0; h < k; h ++)//compute distances to all means, there is k means 
+                { 
+                double distanceToMean = m.negEucD(VectorsAllWords.get(UniqueWords.get(j)).getMap(), ListofMeans.get(h).getMap());//InitialPoints.get(h).getMap()
                 //each word has a TreeofDistances, containing <Distance, Mean<DoubleVectorMap>> to store distance to each mean
+                System.out.println("computing distance of word " + UniqueWords.get(j) + " to Mean " + ListofMeans.get(h).getName() + " distance is " + distanceToMean); 
                 TreeofDistances.put(distanceToMean, ListofMeans.get(h));
                 
                 }
             //return the <distance, mean point> pair with the smallest distance.
-            Map.Entry<Double, DoubleVectorMap> Min = TreeofDistances.firstEntry();
-            String ClusterWordBelongsTo = Min.getValue().getName();
+            Map.Entry<Double, DoubleVectorMap> ClosestMean = TreeofDistances.lastEntry();
+            String ClusterWordBelongsTo = ClosestMean.getValue().getName();
+            System.out.println("this word belongs to mean " + ClusterWordBelongsTo);
             //put Distance, IntegerWordMap into the right cluster Word belongs to 
-            ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(Min.getKey(), VectorsAllWords.get(UniqueWords.get(j))); 
+            ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(ClosestMean.getKey(), VectorsAllWords.get(UniqueWords.get(j))); 
+            System.out.println("for this word put in TreeMap key " + ClosestMean.getKey() + "Value" + VectorsAllWords.get(UniqueWords.get(j)));
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
         //after adding all the words, call update Mean
         //List of Means is a List of <String, Double>
-        ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
+        //ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
         }//end of iterations for loop 
     return ListofTreeMapClusters;
     }
