@@ -338,7 +338,7 @@ public class Main {
     return SimilarityToQuery;
     }
     
-        public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresEucNorm(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
+    public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresEucNorm(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
     //int index = SemanticDimension.indexOf(queryword);
     IntegerVectorMap QueryWordVector = SemanticVecs.get(queryword);    
     TreeMap<Double, String> SimilarityRanking = new TreeMap<>(new ComparatorForDuplicates());  
