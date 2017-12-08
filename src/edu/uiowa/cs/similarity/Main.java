@@ -21,7 +21,8 @@ public class Main {
         options.addOption("v", false, "print unique words along with their semantic vectors");
         options.addOption("t", "query", true, "query word for similarity");
         options.addOption("m", true, "use choice of similarity measure (cosine, euclidean distance, or normalized distance");
-        options.addOption("k", true, "compute k means");
+        options.addOption("k", true, "compute k means clustering for iterations");
+        options.addOption("j", true, "compute k means clustering for iterations and return only top J words");
         CommandLineParser parser = new DefaultParser();
 
         CommandLine cmd = null;
@@ -156,6 +157,28 @@ public class Main {
                     while (cluster3.hasNext())
                         {System.out.println("Cluster 3 - " + cluster3.next().getName());}
                     //System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
+                    
+                    if (cmd.hasOption("j")){
+                    String KMeansTopJInput = cmd.getOptionValue("j");
+                    List<String> ProcessedInputJ = ProcessingQueryInput(KMeansTopJInput);
+                    int kTopJ = Integer.parseInt(ProcessedInputJ.get(0));
+                    int iterationsTopJ = Integer.parseInt(ProcessedInputJ.get(1));
+                    int TopJ = Integer.parseInt(ProcessedInputJ.get(2));
+                    List<IntegerVectorMap> InitialPointsTopJ = getKInitialPoints(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, kTopJ);
+                    List<TreeMap> ClustersOfWordsTopJ = kMeansClustering(InitialPointsTopJ, SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, kTopJ, iterationsTopJ);
+                    
+                    //for each cluster, return an iterator of IntegerWordMaps of closest - to -furthest distance 
+                    for (int i = 0; i < kTopJ; i ++)
+                        {
+                        Iterator <Map.Entry<Double, IntegerVectorMap>> WordsCloseToMean = iteratorOfWordsCloseToMean(ClustersOfWordsTopJ.get(i)); 
+                        int count= 0;
+                        while (WordsCloseToMean.hasNext() && count < TopJ){
+                            Map.Entry<Double, IntegerVectorMap> Next = WordsCloseToMean.next();count++; 
+                            System.out.println("Next closest word for cluster " + i + " is :" + Next.getValue().getName());
+                            }
+                        }
+                    }//end of if has option j
+                    
                     } 
                 file.close();   final long endTime = System.currentTimeMillis();
                 System.out.println("Excution time is:" + (endTime - startTime));
@@ -168,6 +191,13 @@ public class Main {
         }
     }
     //new methods
+    public static Iterator<Map.Entry<Double, IntegerVectorMap>> iteratorOfWordsCloseToMean(TreeMap TreeMapofOneWordCluster){
+    Map<Double, IntegerVectorMap> TreeValues = TreeMapofOneWordCluster.descendingMap();    
+    Iterator<Map.Entry<Double, IntegerVectorMap>> ClosestWords = TreeValues.entrySet().iterator();
+    return ClosestWords;    
+    }
+    
+    
     public static List<IntegerVectorMap> getKInitialPoints(List<String> SemanticVec, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k){
     //get a set of Keys for the 
     int size = SemanticVec.size();
@@ -296,7 +326,7 @@ public class Main {
     
     public static List<DoubleVectorMap> updateMeans(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListofTreeMapClusters){
     //System.out.println("Update means is called");
-    //update every mean
+    //update every semantic dimension of every mean
     for (int i = 0; i < ListofMeans.size(); i++){
         //for every mean, get a set to store words that need to be computed and updated
         TreeSet<String> NeedsUpdate = new TreeSet<>();
@@ -339,16 +369,10 @@ public class Main {
             //System.out.println("+++++++++++Mean before update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
             ListofMeans.get(i).addEntry(key, averageScoreThisWord);//now, updated one dimension for the mean vector
             //System.out.println("+++++++++++Mean after update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
-        }
-            
+        }       
     }
-    
     return ListofMeans;
     }
-
-
-
-
 
     //end new methods
     
