@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.*;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.TreeSet;
 
 public class Main {
 
@@ -106,7 +108,7 @@ public class Main {
                                         //Create a map containing (euc similarity, unique word) pair stored in natural ordering
                                         DescendingSimilarityRanking = MapOfSimilarityScoresNegEuc(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
                                         break;
-                                    case "negeuc":
+                                    case "eucnorm":
                                         //Create a map containing (negeuc similarity, unique word) pair stored in natural ordering
                                         DescendingSimilarityRanking = MapOfSimilarityScoresEucNorm(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
                                         break;
@@ -133,7 +135,18 @@ public class Main {
                                     if (!NextPrint.getValue().equals(QueryWord)) {System.out.println(NextPrint);count++;}
                                 }
                         }
-                    }      
+                    }
+                    
+                    //add option k, iter to compute k means 
+                    if (cmd.hasOption("k")) {
+                    String KMeansInput = cmd.getOptionValue("k");
+                    List<String> ProcessedInput = ProcessingQueryInput(KMeansInput);
+                    int k = Integer.parseInt(ProcessedInput.get(0));
+                    int iterations = Integer.parseInt(ProcessedInput.get(1));
+                    List<IntegerVectorMap> InitialPoints = getKInitialPoints(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k);
+                    List<TreeMap> ClustersOfWords = kMeansClustering(InitialPoints, DescriptorVectorsforAllUniqueWords, k, iterations);
+                    
+                    } 
                 file.close();   final long endTime = System.currentTimeMillis();
                 System.out.println("Excution time is:" + (endTime - startTime));
                 }
@@ -144,6 +157,40 @@ public class Main {
             System.exit(0);
         }
     }
+    //new methods
+    public static List<IntegerVectorMap> getKInitialPoints(List<String> SemanticVec, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k){
+    //get a set of Keys for the 
+    int size = SemanticVec.size();
+    TreeSet<Integer> Indices = new TreeSet<>();
+    Random RandomInitial = new Random();
+    //put k random numbers in set 
+    while (Indices.size() < k){
+    int Random = RandomInitial.nextInt(size);
+    Indices.add(Random);
+    }
+    
+    //get the IntegerVectorMaps associated with these indices
+    List<IntegerVectorMap> InitialPoints= new ArrayList<>();
+    int Index = 0;
+    while (!Indices.isEmpty()){
+        Index = Indices.pollFirst();
+        String key = SemanticVec.get(Index);
+        InitialPoints.add(VectorsAllWords.get(key));
+        }
+    return InitialPoints;
+    }
+    
+    public static List<TreeMap> kMeansClustering(List<IntegerVectorMap> InitialPoints, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k, Integer iterations){
+    // update for i iterations
+    for (int i = 0; i<iterations; i++)
+        {
+        for (int j = 0; j < VectorsAllWords.size(); j ++){
+            
+            }
+        }//end of iterations for loop 
+    
+    }
+    //end new methods
     
     public static List<String> ProcessingQueryInput(String queryInput){
         queryInput = queryInput.replace(" ","");
