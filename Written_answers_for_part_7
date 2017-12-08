@@ -1,11 +1,26 @@
 At this point, we have implemented through part 7, and after running our code with the argument "-j 30,3,2", we received the following output:
 
-A set of random number is: [62, 64, 88, 91, 426, 535, 637, 662, 786, 807, 1226, 1287, 1301, 1371, 1442, 1554, 1589, 1672, 1715, 1783, 1792, 2001, 2121, 2123, 2378, 2474, 2614, 2661, 2765, 2883]
-initial points are   [paper, diedrich, indent, hudson, undisturb, with, duti, comfort, circl, sweetmeat, uplift, utensil, rang, ladi, regard, girl, undisput, articl, hubbub, rode, whip, cream, shift, finish, shadowi, crashh, refresh, foundat, web, goal]
-Initial point {whole=1, whirligig=1, weapon=1, washington=1, urchin=1, upon=1, thu=1, throne=1, three=1, terror=1, swai=1, sundri=1, sleepi=1, seen=1, sceptr=1, repos=1, rampant=1, prohibit=1, power=1, popgun=1, person=1, particular=1, newbi=1, necessarili=1, nail=1, might=1, littl=1, legion=1, legend=1, late=1, knickerbock=1, keep=1, justic=1, irv=1, idl=1, hollow=1, hand=1, half-munch=1, greg=1, gamecock=1, found=1, fly-cag=1, ferul=1, evil=1, edit=1, ebook=1, doer=1, diedrich=1, detect=1, despot=1, desk=1, contraband=1, constant=1, complianc=1, birch=1, behind=1, articl=1, appl=1, among=1, (kingsley)=1, =1}
-Initial point {whole=1.0, whirligig=1.0, weapon=1.0, washington=1.0, urchin=1.0, upon=1.0, thu=1.0, throne=1.0, three=1.0, terror=1.0, swai=1.0, sundri=1.0, sleepi=1.0, seen=1.0, sceptr=1.0, repos=1.0, rampant=1.0, prohibit=1.0, power=1.0, popgun=1.0, person=1.0, particular=1.0, newbi=1.0, necessarili=1.0, nail=1.0, might=1.0, littl=1.0, legion=1.0, legend=1.0, late=1.0, knickerbock=1.0, keep=1.0, justic=1.0, irv=1.0, idl=1.0, hollow=1.0, hand=1.0, half-munch=1.0, greg=1.0, gamecock=1.0, found=1.0, fly-cag=1.0, ferul=1.0, evil=1.0, edit=1.0, ebook=1.0, doer=1.0, diedrich=1.0, detect=1.0, despot=1.0, desk=1.0, contraband=1.0, constant=1.0, complianc=1.0, birch=1.0, behind=1.0, articl=1.0, appl=1.0, among=1.0, (kingsley)=1.0, =1.0}
-Initial point {washington=1, sleepi=1, paper=1, newbi=1, legend=1, late=1, knickerbock=1, irv=1, hollow=1, greg=1, found=1, among=1, (kingsley)=1, =1}
-Initial point {washington=1.0, sleepi=1.0, paper=1.0, newbi=1.0, legend=1.0, late=1.0, knickerbock=1.0, irv=1.0, hollow=1.0, greg=1.0, found=1.0, among=1.0, (kingsley)=1.0, =1.0}
+A set of random number is: [62, 64, 88, 91, 426, 535, 637, 662, 786, 807, 1226, 1287, 1301, 1371, 1442, 1554, 1589, 1672, 
+1715, 1783, 1792, 2001, 2121, 2123, 2378, 2474, 2614, 2661, 2765, 2883]
+initial points are   [paper, diedrich, indent, hudson, undisturb, with, duti, comfort, circl, sweetmeat, uplift, utensil, 
+rang, ladi, regard, girl, undisput, articl, hubbub, rode, whip, cream, shift, finish, shadowi, crashh, refresh, foundat, web, 
+goal]
+Initial point {whole=1, whirligig=1, weapon=1, washington=1, urchin=1, upon=1, thu=1, throne=1, three=1, terror=1, swai=1, 
+sundri=1, sleepi=1, seen=1, sceptr=1, repos=1, rampant=1, prohibit=1, power=1, popgun=1, person=1, particular=1, newbi=1, 
+necessarili=1, nail=1, might=1, littl=1, legion=1, legend=1, late=1, knickerbock=1, keep=1, justic=1, irv=1, idl=1, hollow=1, 
+hand=1, half-munch=1, greg=1, gamecock=1, found=1, fly-cag=1, ferul=1, evil=1, edit=1, ebook=1, doer=1, diedrich=1, detect=1, 
+despot=1, desk=1, contraband=1, constant=1, complianc=1, birch=1, behind=1, articl=1, appl=1, among=1, (kingsley)=1, =1}
+Initial point {whole=1.0, whirligig=1.0, weapon=1.0, washington=1.0, urchin=1.0, upon=1.0, thu=1.0, throne=1.0, three=1.0, 
+terror=1.0, swai=1.0, sundri=1.0, sleepi=1.0, seen=1.0, sceptr=1.0, repos=1.0, rampant=1.0, prohibit=1.0, power=1.0, 
+popgun=1.0, person=1.0, particular=1.0, newbi=1.0, necessarili=1.0, nail=1.0, might=1.0, littl=1.0, legion=1.0, legend=1.0, 
+late=1.0, knickerbock=1.0, keep=1.0, justic=1.0, irv=1.0, idl=1.0, hollow=1.0, hand=1.0, half-munch=1.0, greg=1.0, 
+gamecock=1.0, found=1.0, fly-cag=1.0, ferul=1.0, evil=1.0, edit=1.0, ebook=1.0, doer=1.0, diedrich=1.0, detect=1.0, 
+despot=1.0, desk=1.0, contraband=1.0, constant=1.0, complianc=1.0, birch=1.0, behind=1.0, articl=1.0, appl=1.0, among=1.0, 
+(kingsley)=1.0, =1.0}
+Initial point {washington=1, sleepi=1, paper=1, newbi=1, legend=1, late=1, knickerbock=1, irv=1, hollow=1, greg=1, found=1, 
+among=1, (kingsley)=1, =1}
+Initial point {washington=1.0, sleepi=1.0, paper=1.0, newbi=1.0, legend=1.0, late=1.0, knickerbock=1.0, irv=1.0, hollow=1.0, 
+greg=1.0, found=1.0, among=1.0, (kingsley)=1.0, =1.0}
 
 Next closest word for cluster 0 is :paper
 Next closest word for cluster 1 is :titl
@@ -67,4 +82,9 @@ Next closest word for cluster 28 is :charg
 Next closest word for cluster 29 is :indic
 Next closest word for cluster 29 is :hart
 
-What we can conclude is that no random point chosen in the beginning was at the "middle" since the word changed after the first iteration. We would be surprised if one of the points chosen had been the first chosen word, or had the first iteration chosen the next closest word for each iteration after.  
+What we can conclude is that no random point chosen in the beginning was at the "middle" since the word changed after the 
+first iteration. We would be surprised if one of the points chosen had been the first chosen word, or had the first iteration 
+chosen the next closest word for each iteration after. Also, it's interesting to see which words went into what cluster.  For 
+the most part, the words aren't directly related.  But for some, (for example, respect and sympathy in cluster 14 or meteor 
+and nightmar in cluster 22) the words are somewhat similar in the way that you could use them.  From this we can infer that, 
+had we ran our method for more iterations, the words would get closer and closer in similarity.  
