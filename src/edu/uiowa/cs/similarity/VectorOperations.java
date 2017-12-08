@@ -55,12 +55,12 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
                 //check if map2 contains the word too with an associated co-Occurrance score
                 if (map2.containsKey(KeyListMap1.get(i))) {
                     sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)) - map2.get(KeyListMap1.get(i)), 2);
-                    map2.remove(KeyListMap1.get(i));
                 }
                 else {
                     sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)), 2);
                 }
             }
+            
             // Map 2
             Set<String> KeysMap2 = new TreeSet<>();
             KeysMap2 = map2.keySet();
@@ -70,9 +70,11 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
                 KeyListMap2.add(KeysForMap2.next());
             }
             for (int j = 0; j < KeyListMap2.size(); j++) {
-                sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j)), 2);
-                
+                if (!map1.containsKey(KeyListMap2.get(j))) {
+                    sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j)), 2);
+                }
             }
+            
             return java.lang.Math.sqrt(sum) * (-1);
         }
         
@@ -109,7 +111,6 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
                 //check if map2 contains the word too with an associated co-Occurrance score
                 if (map2.containsKey(KeyListMap1.get(i))) {
                     sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i))/v1dist - map2.get(KeyListMap1.get(i))/v2dist, 2);
-                    map2.remove(KeyListMap1.get(i));
                 }
                 else {
                     sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i))/v1dist, 2);
@@ -124,8 +125,9 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
                 KeyListMap2.add(KeysForMap2.next());
             }
             for (int j = 0; j < KeyListMap2.size(); j++) {
-                sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j))/v2dist, 2);
-                
+                if (!map1.containsKey(KeyListMap2.get(j))) {
+                    sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j))/v2dist, 2);
+                }                
             }
             return java.lang.Math.sqrt(sum) * (-1);
         }

@@ -106,7 +106,7 @@ public class Main {
                                         //Create a map containing (euc similarity, unique word) pair stored in natural ordering
                                         DescendingSimilarityRanking = MapOfSimilarityScoresNegEuc(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
                                         break;
-                                    case "negeuc":
+                                    case "eucnorm":
                                         //Create a map containing (negeuc similarity, unique word) pair stored in natural ordering
                                         DescendingSimilarityRanking = MapOfSimilarityScoresEucNorm(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
                                         break;
@@ -201,7 +201,7 @@ public class Main {
     return SimilarityToQuery;
     }
     
-        public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresEucNorm(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
+    public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresEucNorm(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
     //int index = SemanticDimension.indexOf(queryword);
     IntegerVectorMap QueryWordVector = SemanticVecs.get(queryword);    
     TreeMap<Double, String> SimilarityRanking = new TreeMap<>(new ComparatorForDuplicates());  
