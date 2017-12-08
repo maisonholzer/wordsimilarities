@@ -204,15 +204,9 @@ public class Main {
     
     //each mean is a DoubleVectorMap
     List<DoubleVectorMap> ListofMeans = new ArrayList<>();
-    //initialize k new TreeMaps for storing key (distance) and value (String: word)        
+    
     List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
     
-    //Create a treeMap for each cluster, storing <distance, word> 
-        for (int r = 0; r < k; r ++)
-        {   
-            TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
-            ListofTreeMapClusters.add(cluster);
-        }    
     
     
     //make List of initial points into List of treeMaps with String, Double as Key, Value    
@@ -241,8 +235,14 @@ public class Main {
     // update for i iterations
     for (int i = 0; i<iterations; i++)
         {
-        
-           
+        //initialize k new TreeMaps for storing key (distance) and value (String: word)        
+        ListofTreeMapClusters.clear();
+        //Create a treeMap for each cluster, storing <distance, word> 
+        for (int r = 0; r < k; r ++)
+        {   
+            TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
+            ListofTreeMapClusters.add(cluster);
+        }      
             
         //calculate distances to all means for each unique word    
         for (int j = 0; j < VectorsAllWords.size(); j ++){
@@ -268,7 +268,9 @@ public class Main {
         //List of Means is a List of <String, Double>
         ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
         List<List<Map.Entry<String, Double>>> ChangingMeans = storeChangingMeans(ListofMeans); 
+        
         System.out.println("Means updated for iteration " + i + ChangingMeans);
+        //ListofTreeMapClusters.clear();
         }//end of iterations for loop 
     
     return ListofTreeMapClusters;
