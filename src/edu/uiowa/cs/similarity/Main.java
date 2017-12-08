@@ -202,13 +202,11 @@ public class Main {
     VectorOperations m = new VectorOperations();
     //Words in each cluster is stored in a treemap
     
-    //each mean is a DoubleVectorMap
+    //each mean is a DoubleVectorMap storing <String(word), Double>
     List<DoubleVectorMap> ListofMeans = new ArrayList<>();
     
     List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
-    
-    
-    
+
     //make List of initial points into List of treeMaps with String, Double as Key, Value    
     //create a list of means storing TreeMaps<String, Double> for each mean 
     for (int o = 0; o < k; o++)
@@ -240,7 +238,7 @@ public class Main {
         //Create a treeMap for each cluster, storing <distance, word> 
         for (int r = 0; r < k; r ++)
         {   
-            TreeMap<Double, String> cluster = new TreeMap<>(new ComparatorForDuplicates());
+            TreeMap<Double, IntegerVectorMap> cluster = new TreeMap<>(new ComparatorForDuplicates());
             ListofTreeMapClusters.add(cluster);
         }      
             
@@ -261,6 +259,8 @@ public class Main {
             String ClusterWordBelongsTo = ClosestMean.getValue().getName();
             //System.out.println("this word belongs to mean " + ClusterWordBelongsTo);
             //put Distance, IntegerWordMap into the right cluster Word belongs to 
+            //ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(VectorsAllWords.get(UniqueWords.get(j)), ClosestMean.getKey()); 
+            //original order
             ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(ClosestMean.getKey(), VectorsAllWords.get(UniqueWords.get(j))); 
             //System.out.println("for this word put in TreeMap key " + ClosestMean.getKey() + "Value" + VectorsAllWords.get(UniqueWords.get(j)));
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
@@ -301,6 +301,8 @@ public class Main {
         //for every mean, get a set to store words that need to be computed and updated
         TreeSet<String> NeedsUpdate = new TreeSet<>();
         //iterate over each word<IntegerVectorMap> in each cluster
+        //Iterator<IntegerVectorMap> AllWordsMaps = ListofTreeMapClusters.get(i).descendingKeySet().iterator();
+        //original
         Iterator<IntegerVectorMap> AllWordsMaps = ListofTreeMapClusters.get(i).values().iterator();
         while (AllWordsMaps.hasNext() == true){
             IntegerVectorMap currentWordVec = AllWordsMaps.next();
@@ -319,6 +321,7 @@ public class Main {
             //for each IntegerVectorMap in that cluster, get value for key
             //iterate over all IntegerVectorMaps in one cluster
             Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).values().iterator();
+            //Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).descendingKeySet().iterator();
             int sum = 0;
             while (WordsMapsInCluster.hasNext() == true){
                 //System.out.println("Integer Vec iterator has next");
