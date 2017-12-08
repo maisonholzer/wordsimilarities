@@ -260,38 +260,54 @@ public class Main {
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
         //after adding all the words, call update Mean
         //List of Means is a List of <String, Double>
-        //ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
+        ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);    
         }//end of iterations for loop 
+    
     return ListofTreeMapClusters;
     }
 
     public static List<DoubleVectorMap> updateMeans(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListofTreeMapClusters){
-    //update every mean
+    System.out.println("Update means is called");
+//update every mean
     for (int i = 0; i < ListofMeans.size(); i++){
         //for every mean, get a set to store words that need to be computed and updated
         TreeSet<String> NeedsUpdate = new TreeSet<>();
+        //iterate over each word<IntegerVectorMap> in each cluster
         Iterator<IntegerVectorMap> AllWordsMaps = ListofTreeMapClusters.get(i).values().iterator();
-        while (AllWordsMaps.hasNext()){
+        while (AllWordsMaps.hasNext() == true){
             IntegerVectorMap currentWordVec = AllWordsMaps.next();
             Set<String> DimensionsOneWord = currentWordVec.getMap().keySet();
+            System.out.println("Update Mean cluster" + i + DimensionsOneWord);
             NeedsUpdate.addAll(DimensionsOneWord);
             //Iterator<String> DimensionsOneWord = currentWordVec.getMap().values().iterator();//a collection of all dimensions associated with one word
             
             }//now the Needs Update set contains all dimensions for that cluster
         //now, average values for all vectors for each word in that cluster
         Iterator<String> WordsUpdate = NeedsUpdate.iterator();
-        while (WordsUpdate.hasNext()){
+        System.out.println("needs update set" + NeedsUpdate);
+        while (WordsUpdate.hasNext() == true){
             String key = WordsUpdate.next();
+            System.out.println("For cluster" + i + "dimensions used in updatemMean are " + key);
             //for each IntegerVectorMap in that cluster, get value for key
-            Iterator<IntegerVectorMap> AllWordMaps = ListofTreeMapClusters.get(i).values().iterator();
+            //iterate over all IntegerVectorMaps in one cluster
+            Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).values().iterator();
             int sum = 0;
-            while (AllWordMaps.hasNext()){
-                IntegerVectorMap currentIntegerMap = AllWordMaps.next();
-                sum = sum + currentIntegerMap.getMap().get(key);
-            
+            while (WordsMapsInCluster.hasNext() == true){
+                System.out.println("Integer Vec iterator has next");
+                IntegerVectorMap currentIntegerMap = WordsMapsInCluster.next();
+                System.out.println("current interger word map in cluster is " + currentIntegerMap.getName());
+                //need to check if Map even contains an entry for the key word 
+                if (currentIntegerMap.getMap().containsKey(key) == true){
+                    sum = sum + currentIntegerMap.getMap().get(key);}
+                System.out.println("sum is now" + sum);
                 }//now sum is the sum of all values for one word, Dog, in the cluster
-            double averageScoreThisWord = sum/ListofTreeMapClusters.get(i).size();
+            System.out.println("done for key word " + key + "for cluster" + i + " and sum is" + sum);
+            
+            double averageScoreThisWord = ((double) sum)/((double) ListofTreeMapClusters.get(i).size());
+            System.out.println("Averaged score for word" + averageScoreThisWord);
+            System.out.println("+++++++++++Mean before update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
             ListofMeans.get(i).addEntry(key, averageScoreThisWord);//now, updated one dimension for the mean vector
+            System.out.println("+++++++++++Mean after update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
         }
             
     }
