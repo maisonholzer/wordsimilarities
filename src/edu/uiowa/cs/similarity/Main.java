@@ -157,7 +157,8 @@ public class Main {
                     while (cluster3.hasNext())
                         {System.out.println("Cluster 3 - " + cluster3.next().getName());}
                     //System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
-                    
+                    }
+                    {
                     if (cmd.hasOption("j")){
                     String KMeansTopJInput = cmd.getOptionValue("j");
                     List<String> ProcessedInputJ = ProcessingQueryInput(KMeansTopJInput);
