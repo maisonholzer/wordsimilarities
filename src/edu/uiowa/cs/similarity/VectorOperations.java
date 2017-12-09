@@ -1,7 +1,7 @@
 package edu.uiowa.cs.similarity;
 import java.util.*;
 
-public class VectorOperations implements VectorFunctions<TreeMap<String, Integer>>{
+public class VectorOperations implements VectorFunctions<TreeMap<String, Integer>, TreeMap<String, Double>>{
         @Override
         public Double DotMultiply(TreeMap<String, Integer> map1, TreeMap<String, Integer> map2)
         {   
@@ -131,5 +131,50 @@ public class VectorOperations implements VectorFunctions<TreeMap<String, Integer
             }
             return java.lang.Math.sqrt(sum) * (-1);
         }
-    }
+    
+        ///Eucluean for one integer map and one double map (for computing Semantic Vectors with means) 
+        @Override
+        public Double negEucD(TreeMap<String, Integer> map1, TreeMap<String, Double> map2) {
+            double sum = 0;
+            // Map 1
+            Set<String> KeysMap1 = new TreeSet<>();
+            KeysMap1 = map1.keySet();
+            Iterator<String> KeysForMap1 = KeysMap1.iterator();
+            List<String> KeyListMap1 = new ArrayList<>();
+            while (KeysForMap1.hasNext()) {
+                KeyListMap1.add(KeysForMap1.next());
+            }
+            
+            for (int i = 0; i < KeyListMap1.size(); i++) {
+                //check if map2 contains the word too with an associated co-Occurrance score
+                if (map2.containsKey(KeyListMap1.get(i))) {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)) - map2.get(KeyListMap1.get(i)), 2);
+                }
+                else {
+                    sum += java.lang.Math.pow(map1.get(KeyListMap1.get(i)), 2);
+                }
+            }
+            
+            // Map 2
+            Set<String> KeysMap2 = new TreeSet<>();
+            KeysMap2 = map2.keySet();
+            Iterator<String> KeysForMap2 = KeysMap2.iterator();
+            List<String> KeyListMap2 = new ArrayList<>();
+            while (KeysForMap2.hasNext()) {
+                KeyListMap2.add(KeysForMap2.next());
+            }
+            for (int j = 0; j < KeyListMap2.size(); j++) {
+                if (!map1.containsKey(KeyListMap2.get(j))) {
+                    sum += java.lang.Math.pow(map2.get(KeyListMap2.get(j)), 2);
+                }
+            }
+            
+            return java.lang.Math.sqrt(sum) * (-1);
+        }
+
+
+
+
+
+}
 

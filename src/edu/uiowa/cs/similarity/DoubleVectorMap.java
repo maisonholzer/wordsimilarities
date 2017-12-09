@@ -6,33 +6,34 @@
 package edu.uiowa.cs.similarity;
 
 import java.util.TreeMap;
+
 /**
  *
  * @author User
  */
-public class IntegerVectorMap {
-
-public TreeMap<String, Integer> MapOfCoOccurances;  
+public class DoubleVectorMap {
+public TreeMap<String, Double> MapOfCoOccurances;  
 public String name;
 
-public IntegerVectorMap(String MapName){
+public DoubleVectorMap(String MapName){
 
 MapOfCoOccurances = new TreeMap<>();
 this.name = MapName;
 }    
  
-public TreeMap<String, Integer> addEntry(String word, Integer CoOccur){
+public TreeMap<String, Double> addEntry(String word, Double mean){
 
-MapOfCoOccurances.put(word, CoOccur);    
+MapOfCoOccurances.put(word, mean);    
 
 return MapOfCoOccurances;} 
     
 
-public TreeMap<String, Integer> getMap()
+public TreeMap<String, Double> getMap()
 {
 return this.MapOfCoOccurances;
-}
+}    
 
 public String getName(){
 return this.name;}
+
 }
