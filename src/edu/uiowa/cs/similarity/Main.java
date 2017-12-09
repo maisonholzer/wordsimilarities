@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.TreeSet;
 
 public class Main {
-
+      
     public static void main(String[] args) throws IOException {
         final long startTime = System.currentTimeMillis();
         Options options = new Options();
@@ -23,6 +23,7 @@ public class Main {
         options.addOption("m", true, "use choice of similarity measure (cosine, euclidean distance, or normalized distance");
         options.addOption("k", true, "compute k means clustering for iterations");
         options.addOption("j", true, "compute k means clustering for iterations and return only top J words");
+        options.addOption("i", false, "interactive part");
         CommandLineParser parser = new DefaultParser();
 
         CommandLine cmd = null;
@@ -33,7 +34,7 @@ public class Main {
             new HelpFormatter().printHelp("Main", options, true);
             System.exit(1);
         }
-
+        String mode = "cosine"; 
         String filename = cmd.getOptionValue("f");
 		if (!new File(filename).exists()) {
 			System.err.println("file does not exist "+filename);
@@ -78,12 +79,114 @@ public class Main {
                     
                     TreeMap<String, IntegerVectorMap> DescriptorVectorsforAllUniqueWords= SemanticVectorsforAllUniqueWords(retVal, SemanticVectorDimension); 
                     
+                    //extra credit interactive i
+                    if (cmd.hasOption("i"))
+                    {
+                        Scanner Interactive = new Scanner(System.in);
+                        System.out.println("Vectors have been created");
+                        System.out.println("Type a command!");
+	
+                        String typed = Interactive.next(); 
+                        
+                        
+                        List<String> ProcessedCommand = ProcessingCommandInput(typed);
+                      while (!typed.equals("quit")){
+                        if (typed.toLowerCase().equals("topj"))//(ProcessedCommand.get(0).toLowerCase().equals("topj"))
+                              
+                            {
+                                String QueryWord = Interactive.next();
+                            int NumberToDisplay = Integer.parseInt(Interactive.next());
+                            
+                            if (!SemanticVectorDimension.contains(QueryWord))
+                                {System.err.println("Cannot compute top " + NumberToDisplay + " similarity to " + QueryWord);}
+                            else{
+                            //start vector operations to compare similarity of QueryWord with all unique words in text
+                            //Create a VectorOperations function called m which can do vector multiplications
+                            VectorOperations m = new VectorOperations();
+                            Iterator<Map.Entry<Double, String>> DescendingSimilarityRanking = null;
+                            //Create a map containing (cosine similarity, unique word) pair stored in natural ordering                       
+                            DescendingSimilarityRanking = MapOfSimilarityScoresCosine(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
+                                
+                            //print only TopJ similar words, and exclude query word itself (which has similarity score 1.0)
+                            int count = 0;
+                            while (DescendingSimilarityRanking.hasNext() && count < NumberToDisplay)
+                                {   Map.Entry<Double, String> NextPrint = DescendingSimilarityRanking.next();
+                                    if (!NextPrint.getValue().equals(QueryWord)) {System.out.println(NextPrint);count++;}
+                                }
+                            }
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of topJ part
+                        if (typed.toLowerCase().equals("kmeans"))
+                            {
+                             
+                            int k = Integer.parseInt(Interactive.next());
+                            int iterations = Integer.parseInt(Interactive.next());
+                            List<IntegerVectorMap> InitialPoints = getKInitialPoints(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k);
+                            List<TreeMap> ClustersOfWords = kMeansClustering(InitialPoints, SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k, iterations);
+                            Iterator<IntegerVectorMap> cluster1 = ClustersOfWords.get(0).values().iterator();
+                            while (cluster1.hasNext())
+                            {System.out.println("Cluster 1 - " + cluster1.next().getName());}
+                            Iterator<IntegerVectorMap> cluster2 = ClustersOfWords.get(1).values().iterator();
+                            while (cluster2.hasNext())
+                            {System.out.println("Cluster 2 - " + cluster2.next().getName());}
+                            Iterator<IntegerVectorMap> cluster3 = ClustersOfWords.get(2).values().iterator();
+                            while (cluster3.hasNext())
+                            {System.out.println("Cluster 3 - " + cluster3.next().getName());}
+                            
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of k means part
+                        
+                        if (typed.toLowerCase().equals("setfunction"))
+                            {
+                            mode = Interactive.next().toLowerCase();
+                            System.out.println("similarity mode is now: " + mode);
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }
+                        
+                        
+                        if (typed.toLowerCase().equals("similarity"))
+                            {
+                            String word1 = Interactive.next();
+                            String word2 = Interactive.next();
+                            VectorOperations m = new VectorOperations();
+                            
+                            if (mode.equals("cosine"))
+                                
+                               {double dot = m.DotMultiply(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                double abs = m.absMultiply(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                double CosineSimilarity = dot/abs;         
+                                System.out.println("score is " + CosineSimilarity);}
+                            
+                            if (mode.equals("euc"))
+                                {
+                                double score = m.negEuc(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                System.out.println("score is " + score);
+                                }
+                            if (mode.equals("eucnorm"))   
+                                {
+                                double score = m.eucNorm(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                System.out.println("score is " + score);    
+                                }
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of similarity part
+                      }//end pf while
+                }
+                    
+                    
+                    
+                    
+                    //end of extra credit interactive portion
+                    
                     // If "s" is added to the argument, print the array.
                     if (cmd.hasOption("s")) { // move this back down somehow once finished
                         System.out.println(retVal.toString());
                         System.out.println("Number of Sentences: " + sentenceCount);}
                         
-                    if (cmd.hasOption("v")){//this had error
+                    if (cmd.hasOption("v")){
                         System.out.println("Unique words and their descriptor vectors");
                         for (int i = 0; i < SemanticVectorDimension.size(); i++)
                             //{System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(SemanticVectorDimension.get(i)).getMap().descendingMap());}}
@@ -378,6 +481,12 @@ public class Main {
     return ListofMeans;
     }
 
+    public static List<String> ProcessingCommandInput(String queryInput){
+        
+        String[] QueryInput = queryInput.split(" ");
+        List<String> QueryInputList = Arrays.asList(QueryInput);
+    return QueryInputList;
+    }  
 
     public static List<String> ProcessingQueryInput(String queryInput){
         queryInput = queryInput.replace(" ","");
