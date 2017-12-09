@@ -157,6 +157,7 @@ public class Main {
                     while (cluster3.hasNext())
                         {System.out.println("Cluster 3 - " + cluster3.next().getName());}
                     //System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
+                    }
                     
                     if (cmd.hasOption("j")){
                     String KMeansTopJInput = cmd.getOptionValue("j");
@@ -179,7 +180,7 @@ public class Main {
                         }
                     }//end of if has option j
                     
-                    } 
+                     
                 file.close();   final long endTime = System.currentTimeMillis();
                 System.out.println("Excution time is:" + (endTime - startTime));
                 }
@@ -229,6 +230,7 @@ public class Main {
     //public static TreeMap<> CopyTreeMap()
     
     public static List<TreeMap> kMeansClustering(List<IntegerVectorMap> InitialPoints, List<String> UniqueWords, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k, Integer iterations){
+    System.out.println("++++++++++++Distance to means++++++++++++++++++++");
     VectorOperations m = new VectorOperations();
     //Words in each cluster is stored in a treemap
     
@@ -256,10 +258,6 @@ public class Main {
         ListofMeans.add(n);
         }//Finished creating a List of Means as TreeMaps<String, Double> 
     
-    System.out.println("Initial point " + InitialPoints.get(0).getMap().descendingMap());
-    System.out.println("Initial point " + ListofMeans.get(0).getMap().descendingMap());
-    System.out.println("Initial point " + InitialPoints.get(1).getMap().descendingMap());
-    System.out.println("Initial point " + ListofMeans.get(1).getMap().descendingMap());
     // update for i iterations
     for (int i = 0; i<iterations; i++)
         {
@@ -296,13 +294,15 @@ public class Main {
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
         //after adding all the words, call update Mean
         //List of Means is a List of <String, Double>
+    //    System.out.println("+++iteration" + i);
+        List<Double> AveragedDistancesWordsToMean = computeEuclideanDistanceEachCluster(ListofMeans, ListofTreeMapClusters);
         ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
         List<List<Map.Entry<String, Double>>> ChangingMeans = storeChangingMeans(ListofMeans); 
         
-        System.out.println("Means updated for iteration " + i + ChangingMeans);
+        //System.out.println("Means updated for iteration " + i + ChangingMeans);
         //ListofTreeMapClusters.clear();
         }//end of iterations for loop 
-    
+    System.out.println("++++++++++++++++++++++++End of distance to means");
     return ListofTreeMapClusters;
     }
 
@@ -317,12 +317,31 @@ public class Main {
             while (PrintMeans.hasNext() == true){
             MeansforOneCluster.add(PrintMeans.next());}
         MeansforAllClusters.add(MeansforOneCluster); 
-            
-        
         }
     return MeansforAllClusters; 
     }
     
+    public static List<Double> computeEuclideanDistanceEachCluster(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListTreeMaps) {
+    List<Double> Distances = new ArrayList<>();    
+    VectorOperations m = new VectorOperations();     
+    //for every cluster mean    
+    for (int i = 0; i < ListofMeans.size(); i++)
+        {//for every word in the cluster compute euclidean distance with mean 
+        Map<Double, IntegerVectorMap> WordsInCluster = ListTreeMaps.get(i).descendingMap();
+        Iterator<Map.Entry<Double, IntegerVectorMap>> EachWordInCluster = WordsInCluster.entrySet().iterator();
+        double sum = 0;
+            while (EachWordInCluster.hasNext())
+            {   Map.Entry<Double, IntegerVectorMap> ThisWord = EachWordInCluster.next();
+                double currentDistance = m.negEucD(ThisWord.getValue().getMap(), ListofMeans.get(i).getMap());
+                sum = sum + currentDistance; 
+            }
+        double averageDistance = sum/((double) ListTreeMaps.get(i).size());
+        Distances.add(averageDistance);
+        
+        }
+    System.out.println(Distances);
+    return Distances;    
+    }
     
     public static List<DoubleVectorMap> updateMeans(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListofTreeMapClusters){
     //System.out.println("Update means is called");
