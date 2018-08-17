@@ -1,24 +1,36 @@
 Written answers for part 4. 
 
-a)	What data structure did you finally use for vectors? What is the asymptotic memory usage of a vector? Of all of your vectors? Is this memory usage reasonable and why?
+a) What data structure did you finally use for vectors? What is the asymptotic memory usage of a vector? Of all of your 
+vectors? Is this memory usage reasonable and why?
 
-We used a List to represent a vector. If N is the number of unique words, the memory usage for a vector is O(N). For each vectors for all the unique words, the memory usage would be O(N^2). This memory usage is not reasonable because, as the number of unique words N increases, the memory needed would be N^2.
- 
-b) What algorithm did you finally use for cosine similarity? What is its asymptotic running time? Is this running time reasonable and why?
+We initially used a List to represent a vector. If N is the number of unique words, the memory usage for a vector is O(N). For each 
+vectors for all the unique words, the memory usage would be O(N^2). This memory usage is not reasonable. 
+Therefore, we finally used a TreeMap to represent a vector. To save memory, we only save semantic words that have co-occurance values in the tree, and do not save the zeros. 
 
-For cosine similarity, we have to visit every element of the Vector (List) to perform the multiplication of two vectors being compared. The running time is O(N), which is now efficient. 
- 
-c) What algorithm did you finally use for the Top-J calculation? What is its asymptoticrunning time (might be in terms of J, too)? Is this running time reasonable and why?
+b) What algorithm did you finally use for cosine similarity? What is its asymptotic running time? Is this running time 
+reasonable and why?
 
-For the Top-J calculation, we computed the cosine similarity scores for comparing all unique words with query word (this part would cost O(N2) running time) and stored the scores for all unique words in a TreeMap (Nlog(N) for storing N elements), which guarantees log(N) time for containsKey, get, put, and remove operations. All items in the tree is then returned as a descending list and the Top-J words are returned by an iterator (O(J)). 
+Initially, the computation of cosine similarity with Lists was very inefficient. 
+After switching implementation of Vectors to TreeMaps, the computation of cosine similarity is much smaller than O(N^2) because we do not save those zeros in the tree, so tree size is much smaller than N.  
+For TreeMaps, Java guarantees O(logN) for .contains(), .get() methods. 
 
-O(N2) + O(Nlog(N)) + O(J) ~ O(N2). 
+c) What algorithm did you finally use for the Top-J calculation? What is its asymptoticrunning time (might be in terms of J, 
+too)? Is this running time reasonable and why?
+S is averaged Vector size (not counting zeors).
+
+For the Top-J calculation, we computed the cosine similarity scores for comparing all unique words with query word (this part 
+would cost O(S^2) running time) and stored the scores for all unique words in a TreeMap (Nlog(N) for storing N elements), which 
+guarantees log(N) time for containsKey, get, put, and remove operations. All items in the tree is then returned as a 
+descending list and the Top-J words are returned by an iterator (O(J)). 
+
+O(S2) + O(Nlog(N)) + O(J) ~ O(NlogN), since S is much smaller than N.  
 
 d) What improvements did you make from your original code to make it run faster? Give an example of your running time measurements before and after the changes. Describe the information that informed your choices (asymptotic running time analysis, asymptotic memory analysis, and/or profiling).
 
-We plan to implement new data structures to take into consideration that the vectors would be sparse for large texts. 
+We implemented new data structures to take into consideration that the vectors would be sparse for large texts, so entries without co-occurances are not stored in the TreeMaps. 
+
 **Update**
-We switched our implementation to speed up our process.  First, our Lists are now TreeMaps, which can now run at O(logN).  We also no longer worry about scores that equal 0, that way we no longer have to waste time calculating on them.  
+We switched our implementation to speed up our process.  Most importantly, our Vectors are now TreeMaps, which can now run at O(logN) rather than List implementation taking O(N).  We also no longer worry about scores that equal 0, that way we no longer have to waste time calculating on them. This has made our file twice as fast (first implementation took ~6 minutes to run on my laptop and final implementation takes ~3 minutes to run).  This new method should speed up our whole program throughout all of the parts. 
 
 N=the number of unique words in the text file
 S=the maximum number of unique words any word appears with

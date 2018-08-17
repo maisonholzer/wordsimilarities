@@ -20,15 +20,12 @@ public class VectorOperationsTest {
      */
     @Test
     public void testNegEuc() {
-        System.out.println("negEuc");
+        
         // build map1
         TreeMap<String, Integer> map1 = new TreeMap<>();
         map1.put("a", 1);
         map1.put("b", 4);
         map1.put("c", 1);
-        //map1.put("d", 0);
-        //map1.put("e", 0);
-        //map1.put("f", 0);
         
         // build map2
         TreeMap<String, Integer> map2 = new TreeMap<>();
@@ -60,21 +57,17 @@ public class VectorOperationsTest {
      */
     @Test
     public void testEucNorm() {
-        System.out.println("eucNorm");
+        
         // build map1
         TreeMap<String, Integer> map1 = new TreeMap<>();
         map1.put("a", 1);
         map1.put("b", 4);
         map1.put("c", 1);
-        //map1.put("d", 0);
-        //map1.put("e", 0);
-        //map1.put("f", 0);
         
         // build map2
         TreeMap<String, Integer> map2 = new TreeMap<>();
         map2.put("a", 3);
-        //map2.put("b", 0);
-        //map2.put("c", 0);
+        
         map2.put("d", 1);
         map2.put("e", 1);
         map2.put("f", 2);
@@ -85,7 +78,12 @@ public class VectorOperationsTest {
         assertEquals(-1.27861316602, result, 0.00001);
     }
     
+
     // Test empty trees
+
+    
+// Test empty trees
+
     @Test
     public void testEucNormEmpty() {
         TreeMap<String, Integer> map1 = new TreeMap<>();

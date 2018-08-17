@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.TreeSet;
 
 public class Main {
-
+      
     public static void main(String[] args) throws IOException {
         final long startTime = System.currentTimeMillis();
         Options options = new Options();
@@ -23,6 +23,7 @@ public class Main {
         options.addOption("m", true, "use choice of similarity measure (cosine, euclidean distance, or normalized distance");
         options.addOption("k", true, "compute k means clustering for iterations");
         options.addOption("j", true, "compute k means clustering for iterations and return only top J words");
+        options.addOption("i", false, "interactive part");
         CommandLineParser parser = new DefaultParser();
 
         CommandLine cmd = null;
@@ -33,7 +34,7 @@ public class Main {
             new HelpFormatter().printHelp("Main", options, true);
             System.exit(1);
         }
-
+        String mode = "cosine"; 
         String filename = cmd.getOptionValue("f");
 		if (!new File(filename).exists()) {
 			System.err.println("file does not exist "+filename);
@@ -78,17 +79,119 @@ public class Main {
                     
                     TreeMap<String, IntegerVectorMap> DescriptorVectorsforAllUniqueWords= SemanticVectorsforAllUniqueWords(retVal, SemanticVectorDimension); 
                     
+                    //extra credit interactive i
+                    if (cmd.hasOption("i"))
+                    {
+                        Scanner Interactive = new Scanner(System.in);
+                        System.out.println("Vectors have been created");
+                        System.out.println("Type a command!");
+	
+                        String typed = Interactive.next(); 
+                        
+                        
+                        List<String> ProcessedCommand = ProcessingCommandInput(typed);
+                      while (!typed.equals("quit")){
+                        if (typed.toLowerCase().equals("topj"))//(ProcessedCommand.get(0).toLowerCase().equals("topj"))
+                              
+                            {
+                                String QueryWord = Interactive.next();
+                            int NumberToDisplay = Integer.parseInt(Interactive.next());
+                            
+                            if (!SemanticVectorDimension.contains(QueryWord))
+                                {System.err.println("Cannot compute top " + NumberToDisplay + " similarity to " + QueryWord);}
+                            else{
+                            //start vector operations to compare similarity of QueryWord with all unique words in text
+                            //Create a VectorOperations function called m which can do vector multiplications
+                            VectorOperations m = new VectorOperations();
+                            Iterator<Map.Entry<Double, String>> DescendingSimilarityRanking = null;
+                            //Create a map containing (cosine similarity, unique word) pair stored in natural ordering                       
+                            DescendingSimilarityRanking = MapOfSimilarityScoresCosine(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
+                                
+                            //print only TopJ similar words, and exclude query word itself (which has similarity score 1.0)
+                            int count = 0;
+                            while (DescendingSimilarityRanking.hasNext() && count < NumberToDisplay)
+                                {   Map.Entry<Double, String> NextPrint = DescendingSimilarityRanking.next();
+                                    if (!NextPrint.getValue().equals(QueryWord)) {System.out.println(NextPrint);count++;}
+                                }
+                            }
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of topJ part
+                        if (typed.toLowerCase().equals("kmeans"))
+                            {
+                             
+                            int k = Integer.parseInt(Interactive.next());
+                            int iterations = Integer.parseInt(Interactive.next());
+                            List<IntegerVectorMap> InitialPoints = getKInitialPoints(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k);
+                            List<TreeMap> ClustersOfWords = kMeansClustering(InitialPoints, SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, k, iterations);
+                            Iterator<IntegerVectorMap> cluster1 = ClustersOfWords.get(0).values().iterator();
+                            while (cluster1.hasNext())
+                            {System.out.println("Cluster 1 - " + cluster1.next().getName());}
+                            Iterator<IntegerVectorMap> cluster2 = ClustersOfWords.get(1).values().iterator();
+                            while (cluster2.hasNext())
+                            {System.out.println("Cluster 2 - " + cluster2.next().getName());}
+                            Iterator<IntegerVectorMap> cluster3 = ClustersOfWords.get(2).values().iterator();
+                            while (cluster3.hasNext())
+                            {System.out.println("Cluster 3 - " + cluster3.next().getName());}
+                            
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of k means part
+                        
+                        if (typed.toLowerCase().equals("setfunction"))
+                            {
+                            mode = Interactive.next().toLowerCase();
+                            System.out.println("similarity mode is now: " + mode);
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }
+                        
+                        
+                        if (typed.toLowerCase().equals("similarity"))
+                            {
+                            String word1 = Interactive.next();
+                            String word2 = Interactive.next();
+                            VectorOperations m = new VectorOperations();
+                            
+                            if (mode.equals("cosine"))
+                                
+                               {double dot = m.DotMultiply(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                double abs = m.absMultiply(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                double CosineSimilarity = dot/abs;         
+                                System.out.println("score is " + CosineSimilarity);}
+                            
+                            if (mode.equals("euc"))
+                                {
+                                double score = m.negEuc(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                System.out.println("score is " + score);
+                                }
+                            if (mode.equals("eucnorm"))   
+                                {
+                                double score = m.eucNorm(DescriptorVectorsforAllUniqueWords.get(word1).getMap(), DescriptorVectorsforAllUniqueWords.get(word2).getMap());
+                                System.out.println("score is " + score);    
+                                }
+                            System.out.println("Type a command!");
+                            typed = Interactive.next();
+                            }//end of similarity part
+                      }//end pf while
+                }
+                    
+                    
+                    
+                    
+                    //end of extra credit interactive portion
+                    
                     // If "s" is added to the argument, print the array.
                     if (cmd.hasOption("s")) { // move this back down somehow once finished
                         System.out.println(retVal.toString());
                         System.out.println("Number of Sentences: " + sentenceCount);}
                         
-                    if (cmd.hasOption("v")){//this had error
+                    if (cmd.hasOption("v")){
                         System.out.println("Unique words and their descriptor vectors");
                         for (int i = 0; i < SemanticVectorDimension.size(); i++)
                             //{System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(SemanticVectorDimension.get(i)).getMap().descendingMap());}}
                              {System.out.println(SemanticVectorDimension.get(i) + " has semantic vector "+ DescriptorVectorsforAllUniqueWords.get(SemanticVectorDimension.get(i)).getMap().entrySet());}}
-                    System.out.println("completed up to the cosine similarity part");
+                    
                     if (cmd.hasOption("t")){
                         String queryInput = cmd.getOptionValue("t");
                         List<String> QueryInputList = ProcessingQueryInput(queryInput);
@@ -128,9 +231,9 @@ public class Main {
                             else {
                                 //Create a map containing (cosine similarity, unique word) pair stored in natural ordering                       
                                 DescendingSimilarityRanking = MapOfSimilarityScoresCosine(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
-                                //DescendingSimilarityRanking = MapOfSimilarityScoresEucNorm(SemanticVectorDimension, DescriptorVectorsforAllUniqueWords, QueryWord, m);
+                                
                             }
-                            //print only the number of similar words required by command line input, and exclude query word itself (which has similarity score 1.0)
+                            //print only TopJ similar words, and exclude query word itself (which has similarity score 1.0)
                             int count = 0;
                             while (DescendingSimilarityRanking.hasNext() && count < NumberToDisplay)
                                 {   Map.Entry<Double, String> NextPrint = DescendingSimilarityRanking.next();
@@ -139,7 +242,7 @@ public class Main {
                         }
                     }
                     
-                    //add option k, iter to compute k means 
+                    //compute k means for iterations 
                     if (cmd.hasOption("k")) {
                     String KMeansInput = cmd.getOptionValue("k");
                     List<String> ProcessedInput = ProcessingQueryInput(KMeansInput);
@@ -156,9 +259,15 @@ public class Main {
                     Iterator<IntegerVectorMap> cluster3 = ClustersOfWords.get(2).values().iterator();
                     while (cluster3.hasNext())
                         {System.out.println("Cluster 3 - " + cluster3.next().getName());}
+ 
                     //System.out.println("Cluster 2" + ClustersOfWords.get(1).values());
                     }
                     {
+
+                    
+                    }
+                    
+
                     if (cmd.hasOption("j")){
                     String KMeansTopJInput = cmd.getOptionValue("j");
                     List<String> ProcessedInputJ = ProcessingQueryInput(KMeansTopJInput);
@@ -180,9 +289,9 @@ public class Main {
                         }
                     }//end of if has option j
                     
-                    } 
+                     
                 file.close();   final long endTime = System.currentTimeMillis();
-                System.out.println("Excution time is:" + (endTime - startTime));
+                
                 }
         
         if (cmd.hasOption("h")) {
@@ -209,7 +318,7 @@ public class Main {
         int Random = RandomInitial.nextInt(size);
         Indices.add(Random);
     }
-    System.out.println("A set of random number is: " + Indices);
+    //System.out.println("A set of random number is: " + Indices);
     //get the IntegerVectorMaps associated with these indices
     List<IntegerVectorMap> InitialPoints= new ArrayList<>();
     int Index = 0;
@@ -218,24 +327,24 @@ public class Main {
         String key = SemanticVec.get(Index);
         InitialPoints.add(VectorsAllWords.get(key));
         }
-    //can delete this
+    /*
     List<String> InitialNames = new ArrayList<>();
     for (int l = 0; l < k; l++)
         {InitialNames.add(InitialPoints.get(l).getName());}
     
     System.out.println("initial points are   " + InitialNames);
+    */
     return InitialPoints;
     }
     
-    //public static TreeMap<> CopyTreeMap()
     
     public static List<TreeMap> kMeansClustering(List<IntegerVectorMap> InitialPoints, List<String> UniqueWords, TreeMap<String, IntegerVectorMap> VectorsAllWords, Integer k, Integer iterations){
+    //System.out.println("++++++++++++Distance to means++++++++++++++++++++");
     VectorOperations m = new VectorOperations();
-    //Words in each cluster is stored in a treemap
     
     //each mean is a DoubleVectorMap storing <String(word), Double>
     List<DoubleVectorMap> ListofMeans = new ArrayList<>();
-    
+    //Words in each cluster is stored in a treemap
     List<TreeMap> ListofTreeMapClusters = new ArrayList<>();
 
     //make List of initial points into List of treeMaps with String, Double as Key, Value    
@@ -257,14 +366,10 @@ public class Main {
         ListofMeans.add(n);
         }//Finished creating a List of Means as TreeMaps<String, Double> 
     
-    System.out.println("Initial point " + InitialPoints.get(0).getMap().descendingMap());
-    System.out.println("Initial point " + ListofMeans.get(0).getMap().descendingMap());
-    System.out.println("Initial point " + InitialPoints.get(1).getMap().descendingMap());
-    System.out.println("Initial point " + ListofMeans.get(1).getMap().descendingMap());
     // update for i iterations
     for (int i = 0; i<iterations; i++)
         {
-        //initialize k new TreeMaps for storing key (distance) and value (String: word)        
+        //initialize k new TreeMaps for storing key (distance) and value (String: word) for words in a cluster       
         ListofTreeMapClusters.clear();
         //Create a treeMap for each cluster, storing <distance, word> 
         for (int r = 0; r < k; r ++)
@@ -275,35 +380,30 @@ public class Main {
             
         //calculate distances to all means for each unique word    
         for (int j = 0; j < VectorsAllWords.size(); j ++){
-            //System.out.println("+++++++++++++++++++++++++++++++++");
-            TreeMap<Double, DoubleVectorMap> TreeofDistances = new TreeMap<>();
+            
+            TreeMap<Double, DoubleVectorMap> TreeofDistances = new TreeMap<>(new ComparatorForDuplicatesRandomization());
             for (int h = 0; h < k; h ++)//compute distances to all means, there is k means 
                 { 
                 double distanceToMean = m.negEucD(VectorsAllWords.get(UniqueWords.get(j)).getMap(), ListofMeans.get(h).getMap());//InitialPoints.get(h).getMap()
                 //each word has a TreeofDistances, containing <Distance, Mean<DoubleVectorMap>> to store distance to each mean
-                //System.out.println("computing distance of word " + UniqueWords.get(j) + " to Mean " + ListofMeans.get(h).getName() + " distance is " + distanceToMean); 
                 TreeofDistances.put(distanceToMean, ListofMeans.get(h));
                 
                 }
             //return the <distance, mean point> pair with the smallest distance.
             Map.Entry<Double, DoubleVectorMap> ClosestMean = TreeofDistances.lastEntry();
             String ClusterWordBelongsTo = ClosestMean.getValue().getName();
-            //System.out.println("this word belongs to mean " + ClusterWordBelongsTo);
+            
             //put Distance, IntegerWordMap into the right cluster Word belongs to 
-            //ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(VectorsAllWords.get(UniqueWords.get(j)), ClosestMean.getKey()); 
-            //original order
             ListofTreeMapClusters.get(Integer.parseInt(ClusterWordBelongsTo)).put(ClosestMean.getKey(), VectorsAllWords.get(UniqueWords.get(j))); 
-            //System.out.println("for this word put in TreeMap key " + ClosestMean.getKey() + "Value" + VectorsAllWords.get(UniqueWords.get(j)));
+            
             }//end of for loop for all words, now there are k TreeMaps with disntances, IntegerVectorMaps for words
-        //after adding all the words, call update Mean
-        //List of Means is a List of <String, Double>
+        
+        List<Double> AveragedDistancesWordsToMean = computeEuclideanDistanceEachCluster(ListofMeans, ListofTreeMapClusters);
         ListofMeans = updateMeans(ListofMeans, ListofTreeMapClusters);
         List<List<Map.Entry<String, Double>>> ChangingMeans = storeChangingMeans(ListofMeans); 
         
-        System.out.println("Means updated for iteration " + i + ChangingMeans);
-        //ListofTreeMapClusters.clear();
-        }//end of iterations for loop 
-    
+        } 
+    //System.out.println("++++++++++++++++++++++++End of distance to means");
     return ListofTreeMapClusters;
     }
 
@@ -318,12 +418,31 @@ public class Main {
             while (PrintMeans.hasNext() == true){
             MeansforOneCluster.add(PrintMeans.next());}
         MeansforAllClusters.add(MeansforOneCluster); 
-            
-        
         }
     return MeansforAllClusters; 
     }
     
+    public static List<Double> computeEuclideanDistanceEachCluster(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListTreeMaps) {
+    List<Double> Distances = new ArrayList<>();    
+    VectorOperations m = new VectorOperations();     
+    //for every cluster mean    
+    for (int i = 0; i < ListofMeans.size(); i++)
+        {//for every word in the cluster compute euclidean distance with mean 
+        Map<Double, IntegerVectorMap> WordsInCluster = ListTreeMaps.get(i).descendingMap();
+        Iterator<Map.Entry<Double, IntegerVectorMap>> EachWordInCluster = WordsInCluster.entrySet().iterator();
+        double sum = 0;
+            while (EachWordInCluster.hasNext())
+            {   Map.Entry<Double, IntegerVectorMap> ThisWord = EachWordInCluster.next();
+                double currentDistance = m.negEucD(ThisWord.getValue().getMap(), ListofMeans.get(i).getMap());
+                sum = sum + currentDistance; 
+            }
+        double averageDistance = sum/((double) ListTreeMaps.get(i).size());
+        Distances.add(averageDistance);
+        
+        }
+    //System.out.println(Distances);
+    return Distances;    
+    }
     
     public static List<DoubleVectorMap> updateMeans(List<DoubleVectorMap> ListofMeans, List<TreeMap> ListofTreeMapClusters){
     //System.out.println("Update means is called");
@@ -332,51 +451,49 @@ public class Main {
         //for every mean, get a set to store words that need to be computed and updated
         TreeSet<String> NeedsUpdate = new TreeSet<>();
         //iterate over each word<IntegerVectorMap> in each cluster
-        //Iterator<IntegerVectorMap> AllWordsMaps = ListofTreeMapClusters.get(i).descendingKeySet().iterator();
-        //original
         Iterator<IntegerVectorMap> AllWordsMaps = ListofTreeMapClusters.get(i).values().iterator();
+        
         while (AllWordsMaps.hasNext() == true){
             IntegerVectorMap currentWordVec = AllWordsMaps.next();
             Set<String> DimensionsOneWord = currentWordVec.getMap().keySet();
-            //System.out.println("Update Mean cluster" + i + DimensionsOneWord);
             NeedsUpdate.addAll(DimensionsOneWord);
-            //Iterator<String> DimensionsOneWord = currentWordVec.getMap().values().iterator();//a collection of all dimensions associated with one word
-            
-            }//now the Needs Update set contains all dimensions for that cluster
+            }//now the Needs Update set contains all semantic dimensions for that cluster
         //now, average values for all vectors for each word in that cluster
         Iterator<String> WordsUpdate = NeedsUpdate.iterator();
-        //System.out.println("needs update set" + NeedsUpdate);
+        
         while (WordsUpdate.hasNext() == true){
             String key = WordsUpdate.next();
-            //System.out.println("For cluster" + i + "dimensions used in updatemMean are " + key);
+            
             //for each IntegerVectorMap in that cluster, get value for key
             //iterate over all IntegerVectorMaps in one cluster
             Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).values().iterator();
-            //Iterator<IntegerVectorMap> WordsMapsInCluster = ListofTreeMapClusters.get(i).descendingKeySet().iterator();
+            
             int sum = 0;
             while (WordsMapsInCluster.hasNext() == true){
-                //System.out.println("Integer Vec iterator has next");
+                
                 IntegerVectorMap currentIntegerMap = WordsMapsInCluster.next();
-                //System.out.println("current interger word map in cluster is " + currentIntegerMap.getName());
+                
                 //need to check if Map even contains an entry for the key word 
                 if (currentIntegerMap.getMap().containsKey(key) == true){
                     sum = sum + currentIntegerMap.getMap().get(key);}
-                //System.out.println("sum is now" + sum);
+                
                 }//now sum is the sum of all values for one word, Dog, in the cluster
-            //System.out.println("done for key word " + key + "for cluster" + i + " and sum is" + sum);
             
             double averageScoreThisWord = ((double) sum)/((double) ListofTreeMapClusters.get(i).size());
-            //System.out.println("Averaged score for word" + averageScoreThisWord);
-            //System.out.println("+++++++++++Mean before update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
+            
             ListofMeans.get(i).addEntry(key, averageScoreThisWord);//now, updated one dimension for the mean vector
-            //System.out.println("+++++++++++Mean after update for word" + key + " is " + ListofMeans.get(i).getMap().get(key));
         }       
     }
     return ListofMeans;
     }
 
-    //end new methods
-    
+    public static List<String> ProcessingCommandInput(String queryInput){
+        
+        String[] QueryInput = queryInput.split(" ");
+        List<String> QueryInputList = Arrays.asList(QueryInput);
+    return QueryInputList;
+    }  
+
     public static List<String> ProcessingQueryInput(String queryInput){
         queryInput = queryInput.replace(" ","");
         queryInput = queryInput.replace(","," ");
@@ -407,16 +524,14 @@ public class Main {
         SimilarityRanking.put(CosineSimilarity, SemanticDimension.get(i));
         
         }
-    //System.out.println("Words are" + Names);
-    //System.out.println("Scores are" + Scores);
+    
     Map<Double, String> TreeValues= SimilarityRanking.descendingMap();  
-    //System.out.println("Mappings(Score, word) in this tree is" + TreeValues);
     Iterator<Map.Entry<Double, String>> SimilarityToQuery = TreeValues.entrySet().iterator();
     return SimilarityToQuery;
     }
 
     public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresNegEuc(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
-    //int index = SemanticDimension.indexOf(queryword);
+    
     IntegerVectorMap QueryWordVector = SemanticVecs.get(queryword);    
     TreeMap<Double, String> SimilarityRanking = new TreeMap<>(new ComparatorForDuplicates());  
     //compare query word with every word 
@@ -425,16 +540,14 @@ public class Main {
         double negEucSimilarity = m.negEuc(QueryWordVector.getMap(), SemanticVecs.get(SemanticDimension.get(i)).getMap()); 
         SimilarityRanking.put(negEucSimilarity, SemanticDimension.get(i));
         }
-    //System.out.println("Words are" + Names);
-    //System.out.println("Scores are" + Scores);
+    
     Map<Double, String> TreeValues= SimilarityRanking.descendingMap();  
-    //System.out.println("Mappings(Score, word) in this tree is" + TreeValues);
     Iterator<Map.Entry<Double, String>> SimilarityToQuery = TreeValues.entrySet().iterator();
     return SimilarityToQuery;
     }
     
     public static Iterator<Map.Entry<Double, String>> MapOfSimilarityScoresEucNorm(List<String> SemanticDimension, TreeMap<String, IntegerVectorMap> SemanticVecs, String queryword, VectorOperations m){
-    //int index = SemanticDimension.indexOf(queryword);
+    
     IntegerVectorMap QueryWordVector = SemanticVecs.get(queryword);    
     TreeMap<Double, String> SimilarityRanking = new TreeMap<>(new ComparatorForDuplicates());  
     //compare query word with every word 
@@ -443,10 +556,8 @@ public class Main {
         double EucNormSimilarity = m.eucNorm(QueryWordVector.getMap(), SemanticVecs.get(SemanticDimension.get(i)).getMap()); 
         SimilarityRanking.put(EucNormSimilarity, SemanticDimension.get(i));
         }
-    //System.out.println("Words are" + Names);
-    //System.out.println("Scores are" + Scores);
+    
     Map<Double, String> TreeValues= SimilarityRanking.descendingMap();  
-    //System.out.println("Mappings(Score, word) in this tree is" + TreeValues);
     Iterator<Map.Entry<Double, String>> SimilarityToQuery = TreeValues.entrySet().iterator();
     return SimilarityToQuery;
     }
@@ -465,20 +576,16 @@ public class Main {
     for (int i = 0; i<SemanticVec.size(); i++)
                         {                    
                         VectorsForAllWords = CreateSemanticVectorforOneWord(sentences,SemanticVec, SemanticVec.get(i), VectorsForAllWords);       
-                        //DescriptorVectors.add(WordVector);
                         }
     return VectorsForAllWords;
     }
     
     //create semantic descriptor vector for each unique word.
     private static TreeMap<String, IntegerVectorMap> CreateSemanticVectorforOneWord(List<List<String>> sentences, List<String> SemanticVec, String word, TreeMap<String, IntegerVectorMap> VectorsForAllWords){
-    //create a new IntegerVector(specified dimension)
-    //IntegerVector WordVector = new IntegerVector(SemanticVec.size()); 
     //only need to check unique words occuring after this word in the list
     int index = SemanticVec.indexOf(word);
     for (int i = index; i < SemanticVec.size(); i ++) //check this word + every combination in the Semantic Vector
         {//only start checking CoOccurances if the map doesn't already have an entry with that key 
-        //if (!VectorsForAllWords.get(word).getMap().containsKey(SemanticVec.get(i))) {
             int CoOccur = 0;
                              
             for (int j = 0; j < sentences.size(); j++)//check if they co-occur for every sentence
@@ -493,16 +600,13 @@ public class Main {
             }//have checked every sentence for co-occurance
             //This word co-occur "CoOccur" times with word i in the Semantic Vector
         
-            //WordVector.addArgument(i, CoOccur);
-            //add coOccurance for both words
             if (CoOccur != 0){    
                 //update Map for target "word"
                 VectorsForAllWords.get(word).addEntry(SemanticVec.get(i), CoOccur);
                 //update map for the word being checked against 
                 VectorsForAllWords.get(SemanticVec.get(i)).addEntry(word, CoOccur);}
-            //} if does not already have entry
+           
         }
-    //return WordVector.getVector();
     return VectorsForAllWords;
     }
     
@@ -530,7 +634,7 @@ public class Main {
         List<String> sent = new ArrayList<>();
         // Stem the words using PorterStemmer and remove StopWords
         PorterStemmer stemmer = new PorterStemmer();
-        for (String word : sentence.split(" ")) {//I don't understand this line
+        for (String word : sentence.split(" ")) {
             if (!stopWordList.contains(word)) {
                 word = stemmer.stem(word); 
                 word.replace("\'", "");

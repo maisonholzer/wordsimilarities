@@ -1,4 +1,5 @@
-At this point, we have completed Part 5 with the test case for negEuc (option "euc") and eucNorm (option "eucnorm") working correctly.  After running a Top-J query on a larger text file (using "41-0.txt" -t history,5), these are the outputs:
+At this point, we have completed Part 5 with the test case for negEuc (option "euc") and eucNorm (option "eucnorm") working 
+correctly.  After running a Top-J query on a larger text file (using "41-0.txt" -t history,5), these are the outputs:
 
 Cosine:
 0.814774108011945=england
@@ -21,4 +22,8 @@ EucNorm:
 -0.7647586074783097=almanac
 -0.7647586074783097=fortune-tel
 
-The results give us the same 5 words in the same order.  The good thing is that each of the words give similar scores in each method.  For example, "furnitur" and "belong" both give 0.7075721 in the cosine function and give -0.7647586 in the eucnorm function.  This should be the case since, no matter the method of calculation, those two words should always have the same distance from "history" in the 41-0.txt file.  Technically, the order of the words with the same distance score could change and this wouldn't matter, but our method of sorting must put these entries in the same order.
+The results give us the same 5 words in the same order.  The good thing is that each of the words give similar scores in each 
+method.  For example, "furnitur" and "belong" both give 0.7075721 in the cosine function and give -0.7647586 in the eucnorm 
+function.  This should be the case since, no matter the method of calculation, those two words should always have the same 
+distance from "history" in the 41-0.txt file.  Technically, the order of the words with the same distance score could change 
+and this wouldn't matter, but our method of sorting must put these entries in the same order.
